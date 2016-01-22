@@ -50,7 +50,7 @@ set :host,        options[:host_name]
 set :ssh_options, options
 
 # Disable sudo
-set :disable_sudo, true
+set :disable_sudo, false
 
 # Set environment variables
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
