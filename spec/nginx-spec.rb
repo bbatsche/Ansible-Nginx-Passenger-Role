@@ -6,10 +6,6 @@ RSpec.configure do |config|
   end
 end
 
-# printf "GET / HTTP/1.1\nHost: test.com\n\n" | nc 127.0.0.1 80
-# stdout empty, exit status?
-# last line of access log: 127.0.0.1 - - [22/Jan/2016:20:35:13 +0000] "GET / HTTP/1.1" 444 0 "-" "-" "-"
-
 describe command("nginx -t") do
   # stderr?? Wtf nginx.
   its(:stderr) { should match /configuration file \/etc\/nginx\/nginx\.conf syntax is ok/ }
