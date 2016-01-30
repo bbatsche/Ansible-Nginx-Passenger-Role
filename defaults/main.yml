@@ -1,4 +1,5 @@
 ---
 app_env: dev
 http_root: /srv/http
+site_type: ''
 copy_index: no
