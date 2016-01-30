@@ -32,11 +32,11 @@ server {
   charset utf-8;
 
   # Set this for static access logs later on
-  set $log_path /var/log/nginx/{{ domain }};
+  set $log_path var/log/nginx/{{ domain }};
 
   # Logs for local domain
-  access_log  $log_path/access.log;
-  error_log   $log_path/error.log;
+  access_log /$log_path/access.log;
+  error_log  /var/log/nginx/{{ domain }}/error.log;
 
 {% if app_env == "dev" %}
   autoindex on;
