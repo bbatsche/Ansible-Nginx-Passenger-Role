@@ -51,3 +51,9 @@
     group: www-data
     mode:  0755
   become: yes
+
+- name: Copy index.html
+  template:
+    src: index.html.j2
+    dest: "{{ http_root }}/{{ domain }}/public/index.html"
+  when: copy_index

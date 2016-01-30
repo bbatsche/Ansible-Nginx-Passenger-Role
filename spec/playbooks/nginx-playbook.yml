@@ -2,6 +2,12 @@
 - hosts: all
   vars_files:
     - ../../defaults/main.yml
+  pre_tasks:
+    - name: Clear index.html for test
+      file:
+        name: "{{ http_root }}/{{ domain }}/public/index.html"
+        state: absent
+      when: domain | default('') != ''
   tasks:
     - include: ../../tasks/main.yml
   handlers:
