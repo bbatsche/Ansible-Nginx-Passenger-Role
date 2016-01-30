@@ -17,7 +17,7 @@
     - passenger
 
 - name: Copy HTML5 Boilerplate Configs
-  copy: src=h5bp dest=/etc/nginx/h5bp
+  copy: src=h5bp dest=/etc/nginx/
   become: yes
   notify: Restart Nginx
 
