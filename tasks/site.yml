@@ -1,11 +1,11 @@
 ---
 - name: Create Site Directory
   file:
-    path:  "{{ www_home }}/{{ domain }}"
+    path:  "{{ http_root }}/{{ domain }}"
     state: directory
     owner: "{{ ansible_ssh_user }}"
     group: www-data
-    mode:  03755
+    mode:  02755
   register: dir_create_result
   failed_when: >
     dir_create_result.state != "directory" or
@@ -14,11 +14,11 @@
 
 - name: Create Public Directory
   file:
-    path:  "{{ www_home }}/{{ domain }}/public"
+    path:  "{{ http_root }}/{{ domain }}/public"
     state: directory
     owner: "{{ ansible_ssh_user }}"
     group: www-data
-    mode:  03755
+    mode:  02755
   register: dir_create_result
   failed_when: >
     dir_create_result.state != "directory" or
