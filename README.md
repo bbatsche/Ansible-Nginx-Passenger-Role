@@ -1,6 +1,8 @@
 Ansible Nginx Passenger Role
 ============================
 
+[![Build Status](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role.svg?branch=master)](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role)
+
 This role will install Nginx server along with Phusion Passenger bindings for serving Node, Python, or Ruby. It can also setup and configure a site for a given domain.
 
 Role Variables
