@@ -5,6 +5,8 @@
 
   vars_files:
     - defaults/main.yml
+  vars:
+    domain: test.dev
   tasks:
     - include: tasks/main.yml
   handlers:
