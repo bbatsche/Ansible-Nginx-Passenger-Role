@@ -1,11 +1,25 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+$addExport = <<SCRIPT
+if ! grep -Fxq "/exports/http 127.0.0.1(rw,sync,no_subtree_check)" /etc/exports ; then
+  echo "/exports/http 127.0.0.1(rw,sync,no_subtree_check)" >> /etc/exports
+fi
+SCRIPT
+
 Vagrant.configure('2') do |config|
   config.vm.define ENV['HOST_NAME'] do |c|
     c.vm.box      = 'ubuntu/trusty64'
     c.vm.hostname = ENV['HOST_NAME']
   end
+
+  config.vm.provision :shell, inline: "mkdir -pm 0777 /exports/http"
+  config.vm.provision :shell, inline: "mkdir -pm 0777 /srv/http-nfs"
+  config.vm.provision :shell, inline: "apt-get -y install rpcbind nfs-kernel-server"
+  config.vm.provision :shell, inline: $addExport
+  config.vm.provision :shell, inline: "exportfs -ra"
+  config.vm.provision :shell, inline: "service nfs-kernel-server restart"
+  config.vm.provision :shell, inline: "mountpoint -q /srv/http-nfs || mount -vt nfs 127.0.0.1:/exports/http /srv/http-nfs"
 
   if Vagrant.has_plugin? 'vagrant-cachier'
     config.cache.scope = :box
