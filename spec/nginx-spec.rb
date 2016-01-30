@@ -37,7 +37,7 @@ describe command('printf "GET / HTTP/1.1\nHost: test.com\n\n" | nc 127.0.0.1 80'
 end
 
 describe command("tail -n 1 /var/log/nginx/access.log") do
-  its(:stdout) { should match /^127\.0\.0\.1 - - \[[ 0-9a-zA-Z\/:+]+\] "GET \/ HTTP\/1.1" 444 0 "-" "-" "-"$/ }
+  its(:stdout) { should match /^127\.0\.0\.1 - - \[[ 0-9a-zA-Z\/:+]+\] "GET \/ HTTP\/1\.1" 444 0 "-" "-" "-"$/ }
 end
 
 describe file("/etc/nginx/nginx.conf") do
