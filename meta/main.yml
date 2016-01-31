@@ -8,6 +8,14 @@ galaxy_info:
   - name: Ubuntu
     versions:
     - trusty
-  categories:
+  galaxy_tags:
+  - hhvm
+  - nginx
+  - node
+  - passenger
+  - php
+  - phusion
+  - python
+  - ruby
   - web
 dependencies: []
