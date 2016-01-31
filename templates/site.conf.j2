@@ -38,7 +38,7 @@ server {
   access_log /$log_path/access.log;
   error_log  /var/log/nginx/{{ domain }}/error.log;
 
-{% if app_env == "dev" %}
+{% if env_name == "dev" %}
   autoindex on;
 {% endif %}
 
@@ -82,7 +82,7 @@ server {
 
     fastcgi_index index.php;
 
-    {% if app_env == "dev" -%}
+    {% if env_name == "dev" -%}
       fastcgi_param LARAVEL_ENV local;
     {% endif %}
 
@@ -105,10 +105,10 @@ server {
 {% if site_type in ["node", "python", "ruby"] %}
   passenger_enabled on;
 
-  {% if app_env == "dev" %}
-    passenger_app_env development;
+  {% if env_name == "dev" %}
+    passenger_env_name development;
   {% else %}
-    passenger_app_env production;
+    passenger_env_name production;
   {% endif %}
 
   passenger_app_root {{ http_root }}/{{ domain }};
@@ -124,7 +124,7 @@ server {
     passenger_ruby {{ rbenv_root }}/shims/ruby;
   {% elif site_type == "python" %}
     passenger_app_type wsgi;
-    {% if app_env == "dev" %}
+    {% if env_name == "dev" %}
       passenger_python /usr/bin/python{{ python_version }};
     {% else %}
       passenger_python {{ http_root }}/{{ domain }}/env/bin/python;

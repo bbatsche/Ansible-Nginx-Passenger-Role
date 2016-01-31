@@ -6,7 +6,7 @@ include h5bp/directive-only/no-transform.conf;
 
 include h5bp/location/protect-system-files.conf;
 
-{% if app_env != "dev" %}
+{% if env_name != "dev" %}
 include h5bp/location/expires.conf;
 include h5bp/directive-only/cache-file-descriptors.conf;
 {% endif %}

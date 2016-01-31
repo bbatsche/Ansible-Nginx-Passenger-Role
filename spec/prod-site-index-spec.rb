@@ -5,7 +5,7 @@ RSpec.configure do |config|
     SpecHelper.instance.provision('playbooks/nginx-playbook.yml',{
       domain: "prod-index.dev",
       copy_index: true,
-      app_env: "prod"
+      env_name: "prod"
     })
   end
 end

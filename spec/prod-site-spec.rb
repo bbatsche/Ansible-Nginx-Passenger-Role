@@ -4,7 +4,7 @@ RSpec.configure do |config|
   config.before :suite do
     SpecHelper.instance.provision('playbooks/nginx-playbook.yml', {
       domain: "prod.dev",
-      app_env: "prod"
+      env_name: "prod"
     })
   end
 end

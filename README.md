@@ -8,7 +8,7 @@ This role will install Nginx server along with Phusion Passenger bindings for se
 Role Variables
 --------------
 
-- `app_env` &mdash; Whether this server is in a "development", "production", or other type of environment. Default is "dev"
+- `env_name` &mdash; Whether this server is in a "development", "production", or other type of environment. Default is "dev"
 - `http_root` &mdash; Where site directores should be created. Default is "/srv/http"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
 - `site_type` &mdash; Application server software site uses. Default is none. Possible values are:

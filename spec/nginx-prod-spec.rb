@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 RSpec.configure do |config|
   config.before :suite do
-    SpecHelper.instance.provision('playbooks/nginx-playbook.yml', { app_env: "production" })
+    SpecHelper.instance.provision('playbooks/nginx-playbook.yml', { env_name: "production" })
   end
 end
 
