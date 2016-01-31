@@ -1,9 +1,10 @@
-require_relative 'spec_helper'
+require_relative "lib/ansible_helper"
+require_relative "bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
-    SpecHelper.instance.provision('playbooks/nginx-playbook.yml',{
-      domain: "dev-index.dev",
+    AnsibleHelper.instance.playbook("playbooks/nginx-playbook.yml", {
+      domain:     "dev-index.dev",
       copy_index: true
     })
   end
