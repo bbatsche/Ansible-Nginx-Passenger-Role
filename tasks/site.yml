@@ -33,7 +33,9 @@
     group: www-data
     mode:  0640
   become: yes
-  notify: Restart Nginx
+  notify:
+    - Restart Nginx
+    - Restart Passenger App
 
 - name: Activate Site
   file:
@@ -41,7 +43,9 @@
     dest:  /etc/nginx/sites-enabled/{{ domain }}
     state: link
   become: yes
-  notify: Restart Nginx
+  notify:
+    - Restart Nginx
+    - Restart Passenger App
 
 - name: Create Site Log Directory
   file:
