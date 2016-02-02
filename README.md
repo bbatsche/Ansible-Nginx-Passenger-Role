@@ -11,7 +11,7 @@ Role Variables
 - `env_name` &mdash; Whether this server is in a "development", "production", or other type of environment. Default is "dev"
 - `http_root` &mdash; Where site directores should be created. Default is "/srv/http"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
-- `site_type` &mdash; Application server software this site uses. Default is none. Possible values are:
+- `site_type` &mdash; Application server software this site uses. Default is none. Possible values are:
     - hhvm
     - node
     - php
@@ -21,8 +21,6 @@ Role Variables
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
 ```yml
 - hosts: servers
