@@ -11,7 +11,7 @@ Role Variables
 - `env_name` &mdash; Whether this server is in a "development", "production", or other type of environment. Default is "dev"
 - `http_root` &mdash; Where site directores should be created. Default is "/srv/http"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
-- `site_type` &mdash; Application server software site uses. Default is none. Possible values are:
+- `site_type` &mdash; Application server software this site uses. Default is none. Possible values are:
     - hhvm
     - node
     - php
@@ -62,8 +62,3 @@ There are several rake tasks for interacting with the test environment, includin
 - `rake vagrant[cmd]` &mdash; Run some arbitrary Vagrant command in the test environment. For example, to log in to the test environment run: `rake vagrant[ssh]`
 
 These specs are **not** meant to test for idempotence. They are meant to check that the specified tasks perform their expected steps. Idempotency can be tested independently as a form of integration testing.
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
