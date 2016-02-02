@@ -7,12 +7,8 @@ RSpec.configure do |config|
   end
 end
 
-describe command("nginx -t") do
-  # stderr?? Wtf nginx.
-  its(:stderr) { should match /configuration file \/etc\/nginx\/nginx\.conf syntax is ok/ }
-  its(:stderr) { should match /configuration file \/etc\/nginx\/nginx\.conf test is successful/ }
-
-  its(:exit_status) { should eq 0 }
+describe "Nginx config should be valid" do
+  include_examples "nginx::config"
 end
 
 describe command("nginx -V") do
