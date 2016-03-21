@@ -10,6 +10,7 @@ Role Variables
 
 - `env_name` &mdash; Whether this server is in a "development", "production", or other type of environment. Default is "dev"
 - `http_root` &mdash; Where site directores should be created. Default is "/srv/http"
+- `max_upload_size` &mdash; Maximum upload size in MB. Default is "10"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
 - `site_type` &mdash; Application server software this site uses. Default is none. Possible values are:
     - hhvm
