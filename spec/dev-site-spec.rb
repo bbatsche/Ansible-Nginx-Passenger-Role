@@ -35,9 +35,7 @@ describe command("curl -i test.dev") do
   it "disables cache transforms" do
     expect(subject.stdout).to match /^Cache-Control: no-transform$/
   end
-end
 
-describe command("curl test.dev") do
   it "responds with directory index" do
     expect(subject.stdout).to match /Index of \//
   end

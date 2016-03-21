@@ -18,9 +18,7 @@ describe command("curl -i dev-nfs.dev") do
   it "sends a 200 OK response" do
     expect(subject.stdout).to match /^HTTP\/1\.1 200 OK$/
   end
-end
 
-describe command("curl dev-nfs.dev") do
   it "responds with directory index" do
     expect(subject.stdout).to match /Index of \//
   end
