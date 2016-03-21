@@ -7,16 +7,19 @@ RSpec.configure do |config|
   end
 end
 
-describe "Nginx config should be valid" do
+describe "Nginx config is valid" do
   include_examples "nginx::config"
 end
 
 describe command("nginx -V") do
-  its(:stderr) { should match /--http-log-path=\/var\/log\/nginx\/access\.log/ }
-  its(:stderr) { should match /--error-log-path=\/var\/log\/nginx\/error\.log/ }
-  its(:stderr) { should match /--add-module=[a-zA-Z0-9._\-\/]+passenger\/src\/nginx_module/ }
+  it "has error and access logs set correctly" do
+    expect(subject.stderr).to match /--http-log-path=\/var\/log\/nginx\/access\.log/
+    expect(subject.stderr).to match /--error-log-path=\/var\/log\/nginx\/error\.log/
+  end
 
-  its(:exit_status) { should eq 0 }
+  it "has Phusion Passenger enabled" do
+    expect(subject.stderr).to match /--add-module=[a-zA-Z0-9._\-\/]+passenger\/src\/nginx_module/
+  end
 end
 
 describe service('nginx') do
@@ -27,16 +30,20 @@ describe port(80) do
   it { should be_listening.with('tcp') }
 end
 
-describe command('printf "GET / HTTP/1.1\nHost: test.com\n\n" | nc 127.0.0.1 80') do
-  its(:stdout) { should eq "" }
-
-  its(:exit_status) { should eq 0 }
+describe command('curl 127.0.0.1') do
+  it "sends an empty response" do
+    expect(subject.stderr).to match /Empty reply from server/
+  end
 end
 
 describe command("tail -n 1 /var/log/nginx/access.log") do
-  its(:stdout) { should match /^127\.0\.0\.1 - - \[[ 0-9a-zA-Z\/:+]+\] "GET \/ HTTP\/1\.1" 444 0 "-" "-" "-"$/ }
+  it "logged the previous request" do
+    expect(subject.stdout).to match /^127\.0\.0\.1 - - \[[ 0-9a-zA-Z\/:+]+\] "GET \/ HTTP\/1\.1" 444 0 "-" "curl\/[0-9.]+" "-"$/
+  end
 end
 
 describe file("/etc/nginx/nginx.conf") do
-  its(:content) { should match /^\s+sendfile\s+off;$/ }
+  it "has sendfile turned off" do
+    expect(subject.content).to match /^\s+sendfile\s+off;$/
+  end
 end

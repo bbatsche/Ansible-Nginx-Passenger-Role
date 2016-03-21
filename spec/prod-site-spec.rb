@@ -10,11 +10,12 @@ RSpec.configure do |config|
   end
 end
 
-describe "Nginx config should be valid" do
+describe "Nginx config is valid" do
   include_examples "nginx::config"
 end
 
-describe command('printf "GET / HTTP/1.1\nHost: prod.dev\n\n" | nc 127.0.0.1 80') do
-  # check headers
-  its(:stdout) { should match /^+HTTP\/1\.1 403 Forbidden$/ }
+describe command("curl -i prod.dev") do
+  it "sends a 403 Forbidden response" do
+    expect(subject.stdout).to match /^HTTP\/1\.1 403 Forbidden$/
+  end
 end

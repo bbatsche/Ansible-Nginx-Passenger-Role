@@ -61,3 +61,9 @@
     src: index.html.j2
     dest: "{{ http_root }}/{{ domain }}/public/index.html"
   when: copy_index
+
+- name: Add Domain to Hosts File
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 {{ domain }}"
+  become: yes

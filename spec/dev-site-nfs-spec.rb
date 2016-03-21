@@ -10,14 +10,18 @@ RSpec.configure do |config|
   end
 end
 
-describe "Nginx config should be valid" do
+describe "Nginx config is valid" do
   include_examples "nginx::config"
 end
 
-describe command('printf "GET / HTTP/1.1\nHost: dev-nfs.dev\n\n" | nc 127.0.0.1 80') do
-  # check headers
-  its(:stdout) { should match /^+HTTP\/1\.1 200 OK$/ }
+describe command("curl -i dev-nfs.dev") do
+  it "sends a 200 OK response" do
+    expect(subject.stdout).to match /^HTTP\/1\.1 200 OK$/
+  end
+end
 
-  # server directory listing
-  its(:stdout) { should match /Index of \// }
+describe command("curl dev-nfs.dev") do
+  it "responds with directory index" do
+    expect(subject.stdout).to match /Index of \//
+  end
 end
