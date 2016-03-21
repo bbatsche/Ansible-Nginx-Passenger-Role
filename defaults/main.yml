@@ -3,3 +3,5 @@ env_name: dev
 http_root: /srv/http
 site_type: ''
 copy_index: no
+
+max_upload_size: 10
