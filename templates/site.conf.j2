@@ -84,10 +84,6 @@ server {
 
     fastcgi_index index.php;
 
-    {% if env_name == "dev" -%}
-      fastcgi_param LARAVEL_ENV local;
-    {% endif %}
-
     include fastcgi.conf;
 
     {% if site_type == "php" -%}
