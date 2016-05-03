@@ -6,6 +6,8 @@
   - defaults/main.yml
   vars:
     domain: test.dev
+  roles:
+    - bbatsche.Base
   tasks:
   - include: tasks/main.yml
   handlers:

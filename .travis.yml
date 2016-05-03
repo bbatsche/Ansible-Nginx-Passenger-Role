@@ -13,6 +13,7 @@ before_install:
   - sudo apt-get install -qq python-apt python-pycurl
 install:
   - sudo pip install "ansible~=$ANSIBLE_VERSION"
+  - sudo ansible-galazy install bbatsche.Base
 script:
   - echo localhost > inventory
 
