@@ -3,26 +3,28 @@
   file:
     path:  "{{ http_root }}/{{ domain }}"
     state: directory
-    owner: "{{ ansible_ssh_user }}"
+    owner: www-data
     group: www-data
-    mode:  02755
+    mode:  0775
   register: dir_create_result
   failed_when: >
     dir_create_result.state != "directory" or
-    (dir_create_result.msg is defined and dir_create_result.msg != "chown failed")
+    (dir_create_result.msg is defined and
+    (dir_create_result.msg != "chown failed" or dir_create_result.msg != "chgrp failed"))
   become: yes
 
 - name: Create Public Directory
   file:
     path:  "{{ http_root }}/{{ domain }}/public"
     state: directory
-    owner: "{{ ansible_ssh_user }}"
+    owner: www-data
     group: www-data
-    mode:  02755
+    mode:  0775
   register: dir_create_result
   failed_when: >
     dir_create_result.state != "directory" or
-    (dir_create_result.msg is defined and dir_create_result.msg != "chown failed")
+    (dir_create_result.msg is defined and
+    (dir_create_result.msg != "chown failed" or dir_create_result.msg != "chgrp failed"))
   become: yes
 
 - name: Copy Site Config

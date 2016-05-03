@@ -26,15 +26,14 @@
   become: yes
   notify: Restart Nginx
 
-# I'd really like to not do this! But lineinfile wants write permision.
-# http://serverfault.com/questions/718586/ansible-lineinfile-and-permissions-of-parent-directory
-- name: Allow User to Write Sites-Available
-  file:
-    dest: /etc/nginx/sites-available
-    state: directory
-    owner: "{{ ansible_ssh_user }}"
-    group: www-data
-    mode: 0755
+- name: Allow Web Admins to Write Sites-Available
+  acl:
+    name: /etc/nginx/sites-available
+    etype: group
+    entity: web-admin
+    permissions: rwx
+    default: yes
+    state: present
   become: yes
 
 - name: Enable Default Site
@@ -63,6 +62,55 @@
   file: src=mime.types dest=/etc/nginx/mime.types
   become: yes
   notify: Restart Nginx
+
+- name: Create HTTP Root
+  file:
+    path: "{{ http_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+  become: yes
+
+- name: Allow Web Admins to Write HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: group
+    entity: web-admin
+    permissions: rwx
+    state: present
+    recursive: yes
+  become: yes
+
+- name: Allow Web Admins Write to Future Directories in HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: group
+    entity: web-admin
+    permissions: rwx
+    default: yes
+    state: present
+    recursive: yes
+  become: yes
+
+- name: Do Not Mask Permissions on HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: mask
+    permissions: rwx
+    state: present
+    recursive: yes
+  become: yes
+
+- name: Do Not Mask Permissions of Future Directories in HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: mask
+    permissions: rwx
+    default: yes
+    state: present
+    recursive: yes
+  become: yes
 
 - include: site.yml
   when: domain is defined
