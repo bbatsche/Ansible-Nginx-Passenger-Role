@@ -5,6 +5,11 @@ Ansible Nginx Passenger Role
 
 This role will install Nginx server along with Phusion Passenger bindings for serving Node, Python, or Ruby. It can also setup and configure a site for a given domain.
 
+Requirements
+------------
+
+This role takes advantage of Linux filesystem ACLs and a group called "web-admin" for granting access to particular directories. You can either configure those steps manually or install the [`bbatsche.Base`](https://galaxy.ansible.com/bbatsche/Base/) role.
+
 Role Variables
 --------------
 
