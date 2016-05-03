@@ -38,7 +38,7 @@ end
 
 describe command("tail -n 1 /var/log/nginx/access.log") do
   it "logged the previous request" do
-    expect(subject.stdout).to match /^127\.0\.0\.1 - - \[[ 0-9a-zA-Z\/:+]+\] "GET \/ HTTP\/1\.1" 444 0 "-" "curl\/[0-9.]+" "-"$/
+    expect(subject.stdout).to match /^127\.0\.0\.1 - - \[\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\+\d\d:\d\d\] "GET \/ HTTP\/1\.1" 444 0 "-" "curl\/[0-9.]+" "-"$/
   end
 end
 
