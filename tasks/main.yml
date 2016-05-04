@@ -22,7 +22,7 @@
   notify: Restart Nginx
 
 - name: Create Default Site
-  copy: src=site.default.conf dest=/etc/nginx/sites-available/default
+  copy: src=site.default.conf dest=/etc/nginx/sites-available/default mode=0600
   become: yes
   notify: Restart Nginx
 
@@ -32,7 +32,6 @@
     etype: group
     entity: web-admin
     permissions: rwx
-    default: yes
     state: present
   become: yes
 
@@ -64,53 +63,18 @@
   notify: Restart Nginx
 
 - name: Create HTTP Root
-  file:
-    path: "{{ http_root }}"
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: 0775
+  file: path={{ http_root }} state=directory
   become: yes
 
-- name: Allow Web Admins to Write HTTP Root
-  acl:
-    name: "{{ http_root }}"
-    etype: group
-    entity: web-admin
-    permissions: rwx
-    state: present
-    recursive: yes
-  become: yes
+# If HTTP root is an NFS mount we need to skip various ACL and permission related tasks
+# Disable warnings since Ansible's stat module doesn't return any info about the FS type
+- name: Check if HTTP Root is NFS
+  command: stat -f -c %T {{ http_root }} warn=no
+  register: http_root_fs
+  changed_when: no
 
-- name: Allow Web Admins Write to Future Directories in HTTP Root
-  acl:
-    name: "{{ http_root }}"
-    etype: group
-    entity: web-admin
-    permissions: rwx
-    default: yes
-    state: present
-    recursive: yes
-  become: yes
-
-- name: Do Not Mask Permissions on HTTP Root
-  acl:
-    name: "{{ http_root }}"
-    etype: mask
-    permissions: rwx
-    state: present
-    recursive: yes
-  become: yes
-
-- name: Do Not Mask Permissions of Future Directories in HTTP Root
-  acl:
-    name: "{{ http_root }}"
-    etype: mask
-    permissions: rwx
-    default: yes
-    state: present
-    recursive: yes
-  become: yes
+- include: http_root_acl.yml
+  when: http_root_fs.stdout != "nfs"
 
 - include: site.yml
   when: domain is defined

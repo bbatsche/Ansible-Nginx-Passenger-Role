@@ -1,0 +1,47 @@
+---
+- name: Allow WWW Data to Write HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: user
+    entity: www-data
+    permissions: rwx
+    state: present
+  become: yes
+
+- name: Allow WWW Data to Write Future Directories
+  acl:
+    name: "{{ http_root }}"
+    etype: user
+    entity: www-data
+    permissions: rwx
+    default: yes
+    state: present
+  become: yes
+
+- name: Allow Web Admins to Write HTTP Root
+  acl:
+    name: "{{ http_root }}"
+    etype: group
+    entity: web-admin
+    permissions: rwx
+    state: present
+  become: yes
+
+- name: Allow Web Admins Write to Future Directories
+  acl:
+    name: "{{ http_root }}"
+    etype: group
+    entity: web-admin
+    permissions: rwx
+    default: yes
+    state: present
+  become: yes
+
+- name: Set ACL Mask for Future Directories
+  acl:
+    name: "{{ http_root }}"
+    etype: mask
+    permissions: rwx
+    default: yes
+    state: present
+  become: yes

@@ -7,7 +7,7 @@
   vars:
     domain: test.dev
   roles:
-    - bbatsche.Base
+  - bbatsche.Base
   tasks:
   - include: tasks/main.yml
   handlers:
