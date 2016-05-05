@@ -5,7 +5,7 @@ RSpec.configure do |config|
   config.before :suite do
     AnsibleHelper.instance.playbook("playbooks/nginx-playbook.yml", {
       domain:    "dev-nfs.dev",
-      http_root: "/srv/http-nfs"
+      http_root: "/srv/nfs/http"
     })
   end
 end

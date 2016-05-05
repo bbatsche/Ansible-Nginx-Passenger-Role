@@ -38,4 +38,4 @@
       command: exportfs -ra
 
     - name: Remount NFS
-      mount: name=/srv/http-nfs fstype=nfs src=127.0.0.1:/exports/http state=mounted
+      mount: name=/srv/nfs fstype=nfs src=127.0.0.1:/exports/http state=mounted
