@@ -17,7 +17,7 @@
     state: present
   become: yes
 
-- name: Allow WWW Data to Write Future Directories
+- name: Allow www-data to Write Future Directories
   acl:
     name: "{{ http_root }}"
     etype: user
