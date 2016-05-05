@@ -26,6 +26,15 @@
   become: yes
   notify: Restart Nginx
 
+- name: Propogate Web Admin Group in Sites-Available
+  file:
+    path: /etc/nginx/sites-available
+    state: directory
+    owner: root
+    group: web-admin
+    mode: 02775
+  become: yes
+
 - name: Allow Web Admins to Write Sites-Available
   acl:
     name: /etc/nginx/sites-available

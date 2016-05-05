@@ -1,5 +1,14 @@
 ---
-- name: Allow WWW Data to Write HTTP Root
+- name: Propogate www-data Group in HTTP Root
+  file:
+    path: "{{ http_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 02775
+  become: yes
+
+- name: Allow www-data to Write HTTP Root
   acl:
     name: "{{ http_root }}"
     etype: user
