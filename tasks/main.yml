@@ -72,7 +72,7 @@
   notify: Restart Nginx
 
 - name: Create HTTP Root
-  file: path={{ http_root }} state=directory
+  file: path={{ http_root }} state=directory mode=02775
   become: yes
 
 # If HTTP root is an NFS mount we need to skip various ACL and permission related tasks
@@ -83,7 +83,13 @@
   changed_when: no
 
 - include: http_root_acl.yml
-  when: http_root_fs.stdout != "nfs"
+  when: >
+    not (
+      http_root_fs.stdout == "nfs" or
+      http_root_fs.stdout == "vmhgfs" or
+      http_root_fs.stdout == "vboxsf" or
+      http_root_fs.stdout == "prl_fs"
+    )
 
 - include: site.yml
   when: domain is defined

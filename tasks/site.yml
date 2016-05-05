@@ -1,6 +1,12 @@
 ---
+# Either we are in production with a typical flat filesystem, or Vagrant with a shared folder structure
+# If it's vagrant, we assume the user has the user/group configured correctly, we just manage perms
+- name: Create Site Directory
+  file: path={{ http_root }}/{{ domain }} state=directory mode=02775
+  become: yes
+
 - name: Create Public Directory
-  file: path={{ http_root }}/{{ domain }}/public state=directory
+  file: path={{ http_root }}/{{ domain }}/public state=directory mode=02775
   become: yes
 
 - name: Copy Site Config
