@@ -88,9 +88,9 @@ server {
 
     {% if site_type == "php" -%}
       {% if phpenv_root is defined and php_version is defined %}
-        fastcgi_pass unix:{{ phpenv_root }}/versions/{{ php_version }}/var/run/fpm-{{ domain }}.sock;
+        fastcgi_pass unix:{{ phpenv_root }}/versions/{{ php_version }}/var/run/php-fpm-{{ domain }}.sock;
       {% else %}
-        fastcgi_pass unix:/var/run/php5-fpm-{{ domain }}.sock;
+        fastcgi_pass unix:/var/run/php-fpm-{{ domain }}.sock;
       {% endif %}
     {% else -%}
       # Eventually directly managing HHVM repo in production will probably add some performance
