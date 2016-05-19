@@ -1,12 +1,17 @@
 require "serverspec"
 require_relative "lib/ansible_helper"
 
-options = AnsibleHelper.instance.sshOptions
+if ENV.has_key?("CONTINUOUS_INTEGRATION") && ENV["CONTINUOUS_INTEGRATION"] == "true"
+  set :backend, :exec
+else
+  options = AnsibleHelper.instance.sshOptions
 
-set :backend, :ssh
+  set :backend, :ssh
 
-set :host,        options[:host_name]
-set :ssh_options, options
+  set :host,        options[:host_name]
+  set :ssh_options, options
+end
+
 
 # Disable sudo
 set :disable_sudo, false
@@ -15,7 +20,7 @@ set :disable_sudo, false
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
-set :path, '/sbin:/usr/local/sbin:/usr/local/bin:$PATH'
+set :path, '/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH'
 
 shared_examples "nginx::config" do
   describe command("nginx -t") do
