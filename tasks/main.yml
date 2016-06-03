@@ -88,7 +88,8 @@
       http_root_fs.stdout == "nfs" or
       http_root_fs.stdout == "vmhgfs" or
       http_root_fs.stdout == "vboxsf" or
-      http_root_fs.stdout == "prl_fs"
+      http_root_fs.stdout == "prl_fs" or
+      http_root_fs.stdout == "fuseblk"
     )
 
 - include: site.yml
