@@ -3,7 +3,7 @@ require_relative "bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
-    AnsibleHelper.instance.playbook "playbooks/nginx-playbook.yml", env_name: "production"
+    AnsibleHelper.playbook "playbooks/nginx-playbook.yml", ENV["TARGET_HOST"], env_name: "production"
   end
 end
 

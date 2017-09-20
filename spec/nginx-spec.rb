@@ -3,7 +3,7 @@ require_relative "bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
-    AnsibleHelper.instance.playbook "playbooks/nginx-playbook.yml"
+    AnsibleHelper.playbook "playbooks/nginx-playbook.yml"
   end
 end
 
