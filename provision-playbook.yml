@@ -1,61 +1,85 @@
 ---
 - hosts: all
+  gather_facts: false
 
   roles:
     - bbatsche.Base
 
+  pre_tasks:
+    - name: Install python2 for Ansible
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      become: yes
+      register: output
+      changed_when:
+        - output.stdout != ""
+        - output.stdout != "\r\n"
+
+    - name: Gathering Facts
+      setup:
+
   tasks:
-  - name: Always Expand Bash Aliases
-    copy:
-      content: shopt -s expand_aliases;
-      dest: /etc/profile.d/alias.sh
-    become: yes
+    - name: Always Expand Bash Aliases
+      copy:
+        content: shopt -s expand_aliases;
+        dest: /etc/profile.d/alias.sh
+      become: yes
 
-  - name: Accept All Environment Variables from SSH
-    lineinfile:
-      line: AcceptEnv *
-      regexp: ^AcceptEnv
-      dest: /etc/ssh/sshd_config
-      validate: /usr/sbin/sshd -t -f %s
-    become: yes
-    notify: Restart SSH
+    - name: Accept All Environment Variables from SSH
+      lineinfile:
+        line: AcceptEnv *
+        regexp: ^AcceptEnv
+        dest: /etc/ssh/sshd_config
+        validate: /usr/sbin/sshd -t -f %s
+      become: yes
+      notify: Restart SSH
+      when:
+        - ansible_connection | default('smart') != 'local'
+        - ansible_connection | default('smart') != 'docker'
 
-  - name: Install NFS Packages
-    apt: name={{ item }}
-    with_items:
-      - rpcbind
-      - nfs-kernel-server
-    become: yes
-    notify: Restart NFS
+    - name: Install Spec Dependencies
+      apt: name={{ item }} state=present update_cache=yes cache_valid_time=86400
+      become: yes
+      with_items:
+        - lsb-release
+        - lsb-core
+        - netcat
 
-  - name: Create NFS Export Directory
-    file: path=/exports/http state=directory mode=0777
-    become: yes
-    notify: Restart NFS
+    - name: Install NFS Packages
+      apt: name={{ item }}
+      with_items:
+        - rpcbind
+        - nfs-kernel-server
+      become: yes
+      notify: Restart NFS
 
-  - name: Create NFS Export Record
-    lineinfile:
-      dest: /etc/exports
-      line: /exports/http 127.0.0.1(rw,sync,no_subtree_check)
-      create: yes
-    become: yes
-    notify:
-      - Reload NFS Exports
-      - Remount NFS
+    - name: Create NFS Export Directory
+      file: path=/exports/http state=directory mode=0777
+      become: yes
+      notify: Restart NFS
+
+    - name: Create NFS Export Record
+      lineinfile:
+        dest: /etc/exports
+        line: /exports/http 127.0.0.1(rw,sync,no_subtree_check)
+        create: yes
+      become: yes
+      notify:
+        - Reload NFS Exports
+        - Remount NFS
 
   handlers:
-  - name: Restart NFS
-    service: name=nfs-kernel-server state=restarted
-    become: yes
+    - name: Restart NFS
+      service: name=nfs-kernel-server state=restarted
+      become: yes
 
-  - name: Reload NFS Exports
-    command: exportfs -ra
-    become: yes
+    - name: Reload NFS Exports
+      command: exportfs -ra
+      become: yes
 
-  - name: Remount NFS
-    mount: name=/srv/nfs fstype=nfs src=127.0.0.1:/exports/http state=mounted
-    become: yes
+    - name: Remount NFS
+      mount: name=/srv/nfs fstype=nfs src=127.0.0.1:/exports/http state=mounted
+      become: yes
 
-  - name: Restart SSH
-    service: name=ssh state=restarted
-    become: yes
+    - name: Restart SSH
+      service: name=ssh state=restarted
+      become: yes

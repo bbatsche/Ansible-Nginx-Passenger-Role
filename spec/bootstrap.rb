@@ -1,17 +1,20 @@
 require "serverspec"
 require_relative "lib/ansible_helper"
+require_relative "environments"
+require_relative "shared/no_errors"
 
-if ENV.has_key?("CONTINUOUS_INTEGRATION") && ENV["CONTINUOUS_INTEGRATION"] == "true"
-  set :backend, :exec
+if ENV["CONTINUOUS_INTEGRATION"] == "true"
+  set :backend, :docker
+
+  set :docker_container, AnsibleHelper[ENV["TARGET_HOST"]].id
+
+  # Trigger OS info refresh
+  Specinfra.backend.os_info
 else
-  options = AnsibleHelper.instance.sshOptions
-
   set :backend, :ssh
 
-  set :host,        options[:host_name]
-  set :ssh_options, options
+  set :ssh_options, AnsibleHelper[ENV["TARGET_HOST"]].sshConfig
 end
-
 
 # Disable sudo
 set :disable_sudo, false
@@ -20,7 +23,9 @@ set :disable_sudo, false
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
-set :path, '/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH'
+set :path, "/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:$PATH"
+
+set :shell, "/bin/bash"
 
 shared_examples "nginx::config" do
   describe command("nginx -t") do
