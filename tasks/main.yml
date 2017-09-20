@@ -5,7 +5,7 @@
 
 - name: Add Phusion Passenger APT Repository
   apt_repository:
-    repo: "deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main"
+    repo: deb https://oss-binaries.phusionpassenger.com/apt/passenger {{ ansible_distribution_release }} main
     state: present
   become: yes
 
@@ -83,6 +83,7 @@
   changed_when: no
 
 - include: http_root_acl.yml
+  static: no
   when: >
     not (
       http_root_fs.stdout == "nfs" or
@@ -93,4 +94,5 @@
     )
 
 - include: site.yml
+  static: no
   when: domain is defined

@@ -1,20 +1,18 @@
 ---
 - hosts: all
+
   vars_files:
-  - "../../defaults/main.yml"
+    - ../../defaults/main.yml
+
   pre_tasks:
-  - name: Clear index.html for test
-    file:
-      name: "{{ http_root }}/{{ domain }}/public/index.html"
-      state: absent
-    when: domain | default('') != ''
+    - name: Clear index.html for test
+      file:
+        name: "{{ http_root }}/{{ domain }}/public/index.html"
+        state: absent
+      when: domain | default('') != ''
+
   tasks:
-  - include: "../../tasks/main.yml"
+    - include: ../../tasks/main.yml
+
   handlers:
-  - include: "../../handlers/main.yml"
-  - name: Restart Nginx
-    service: name=nginx state=restarted
-    become: true
-  - name: Restart Passenger App
-    command: passenger-config restart-app {{ http_root }}/{{ domain }} --ignore-app-not-running
-    when: site_type in ['node', 'python', 'ruby']
+    - include: ../../handlers/main.yml
