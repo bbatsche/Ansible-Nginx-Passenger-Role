@@ -8,7 +8,8 @@ services:
 language: generic
 
 env:
-  - ANSIBLE_VERSION="2.1"
+  ## Need to support unsafe_writes for lineinfile to update /etc/hosts in Docker
+  # - ANSIBLE_VERSION="2.1"
   - ANSIBLE_VERSION="2.2"
   - ANSIBLE_VERSION="2.3"
   - ANSIBLE_VERSION="2.4"
