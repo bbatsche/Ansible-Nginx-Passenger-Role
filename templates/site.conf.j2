@@ -8,19 +8,62 @@ server {
   listen 80;
 
   # listen on the www host
-  server_name www.{{ domain }};
+  server_name www.{{ domain }} {{ domain if use_ssl else '' }};
 
   # and redirect to the non-www host (declared below)
-  return 301 $scheme://{{ domain }}$request_uri;
+  # avoiding http://www -> https://www -> https:// chain (if applicable).
+  return 301 {{ 'https' if use_ssl else '$scheme' }}://{{ domain }}$request_uri;
 }
 
+{% if use_ssl %}
 server {
-  # listen [::]:80 accept_filter=httpready; # for FreeBSD
-  # listen 80 accept_filter=httpready; # for FreeBSD
-  # listen [::]:80 deferred; # for Linux
-  # listen 80 deferred; # for Linux
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+
+  # listen on the wrong host
+  server_name www.{{ domain }};
+
+  include h5bp/directive-only/ssl.conf;
+
+  {% if use_letsencrypt %}
+  include h5bp/directive-only/ssl-stapling.conf;
+
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  {% else %}
+  ssl_certificate     /etc/ssl/certs/selfsigned.crt;
+  ssl_certificate_key /etc/ssl/private/selfsigned.key;
+  {% endif %}
+
+  # and redirect to the non-www host (declared below)
+  return 301 https://{{ domain }}$request_uri;
+}
+{% endif %}
+
+server {
+{% if use_ssl %}
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+
+  include h5bp/directive-only/ssl.conf;
+
+  {% if use_letsencrypt %}
+  include h5bp/directive-only/ssl-stapling.conf;
+
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  {% else %}
+  ssl_certificate     /etc/ssl/certs/selfsigned.crt;
+  ssl_certificate_key /etc/ssl/private/selfsigned.key;
+  {% endif %}
+{% else %}
   listen [::]:80;
   listen 80;
+{% endif %}
 
   # The host name to respond to
   server_name {{ domain }};
@@ -31,11 +74,8 @@ server {
   #Specify a charset
   charset utf-8;
 
-  # Set this for static access logs later on
-  set $log_path var/log/nginx/{{ domain }};
-
   # Logs for local domain
-  access_log /$log_path/access.log;
+  access_log /var/log/nginx/{{ domain }}/access.log;
   error_log  /var/log/nginx/{{ domain }}/error.log;
 
 {% if env_name == "dev" %}
@@ -45,14 +85,9 @@ server {
   client_max_body_size {{ max_upload_size }}m;
 
   # Skip access log and not found logging for favicons and robots.txt
-  location = /favicon.ico {
-    access_log off;
-    log_not_found off;
-  }
-
-  location = /robots.txt {
-    allow all;
-    access_log off;
+  location ~ ^/(favicon.ico|robots.txt)/ {
+    allow         all;
+    access_log    off;
     log_not_found off;
   }
 
@@ -86,18 +121,18 @@ server {
 
     include fastcgi.conf;
 
-    {% if site_type == "php" -%}
+    {% if site_type == "php" %}
       {% if phpenv_root is defined and php_version is defined %}
-        fastcgi_pass unix:{{ phpenv_root }}/versions/{{ php_version }}/var/run/{{ domain }}.sock;
+    fastcgi_pass unix:{{ phpenv_root }}/versions/{{ php_version }}/var/run/{{ domain }}.sock;
       {% else %}
-        fastcgi_pass unix:/var/run/php-fpm/{{ domain }}.sock;
+    fastcgi_pass unix:/var/run/php-fpm/{{ domain }}.sock;
       {% endif %}
-    {% else -%}
-      # Eventually directly managing HHVM repo in production will probably add some performance
-      # improvements, but as yet there isn't a clear way to change the setting on a per host basis
-      # fastcgi_param PHP_VALUE "hhvm.repo.local.path = /var/run/hhvm/{{ domain }}.hhbc";
-      fastcgi_keep_conn on;
-      fastcgi_pass unix:/var/run/hhvm/server.sock;
+    {% else %}
+    # Eventually directly managing HHVM repo in production will probably add some performance
+    # improvements, but as yet there isn't a clear way to change the setting on a per host basis
+    # fastcgi_param PHP_VALUE "hhvm.repo.local.path = /var/run/hhvm/{{ domain }}.hhbc";
+    fastcgi_keep_conn on;
+    fastcgi_pass unix:/var/run/hhvm/server.sock;
     {% endif %}
   }
 {% else %}
@@ -108,28 +143,28 @@ server {
   passenger_enabled on;
 
   {% if env_name == "dev" %}
-    passenger_app_env development;
+  passenger_app_env development;
   {% else %}
-    passenger_app_env production;
+  passenger_app_env production;
   {% endif %}
 
   passenger_app_root {{ http_root }}/{{ domain }};
 
   {% if site_type == "node" %}
-    passenger_app_type node;
+  passenger_app_type node;
 
-    # Explicitly set node startup file. Passenger seems to require this.
-    passenger_startup_file app.js;
-    passenger_nodejs {{ nvm_root }}/versions/node/{{ node_version }}/bin/node;
+  # Explicitly set node startup file. Passenger seems to require this.
+  passenger_startup_file app.js;
+  passenger_nodejs {{ nvm_root }}/versions/node/{{ node_version }}/bin/node;
   {% elif site_type == "ruby" %}
-    passenger_app_type rack;
-    passenger_ruby {{ rbenv_root }}/shims/ruby;
+  passenger_app_type rack;
+  passenger_ruby {{ rbenv_root }}/shims/ruby;
   {% elif site_type == "python" %}
-    passenger_app_type wsgi;
+  passenger_app_type wsgi;
     {% if env_name == "dev" %}
-      passenger_python /usr/bin/python{{ python_version }};
+  passenger_python /usr/bin/python{{ python_version }};
     {% else %}
-      passenger_python {{ http_root }}/{{ domain }}/env/bin/python;
+  passenger_python {{ http_root }}/{{ domain }}/env/bin/python;
     {% endif %}
   {% endif %}
 {% endif %}

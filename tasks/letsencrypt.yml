@@ -1,0 +1,44 @@
+---
+- name: Add Let's Encrypt APT Repository
+  apt_repository: repo=ppa:certbot/certbot state=present
+  become: yes
+
+- name: Install Let's Encrypt
+  apt: name=python-certbot-nginx state=present
+  become: yes
+
+- name: Create Let's Encrypt Web Root
+  file: path={{ http_root }}/letsencrypt state=directory
+  become: yes
+
+- name: Reload Nginx Config
+  service: name=nginx state=reloaded
+  become: yes
+  when: nginx_config.changed or default_site_config.changed or default_site_enabled.changed
+
+- name: Generate Certificate
+  command: certbot certonly -n --agree-tos -m {{ email_address }} {{ "--staging" if env_name == "dev" else "" }} --webroot -w {{ http_root }}/letsencrypt -d {{ domain }},www.{{ domain }}
+  args:
+    creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem
+  become: yes
+
+- name: Modify Let's Encrypt Webroot Config
+  lineinfile:
+    name:     /etc/letsencrypt/renewal/{{ domain }}.conf
+    regexp:   '^{{ item }}\s*=\s*.+(,?)$'
+    line:     '{{ item }} = {{ http_root }}/{{ domain }}/public\1'
+    backrefs: yes
+  with_items:
+    - webroot_path
+    - www.{{ domain }}
+    - "{{ domain }}"
+  become: yes
+
+- name: Create Let's Encrypt Cron Job
+  cron:
+    day:    "*/12"
+    hour:   "3"
+    minute: "15"
+    name:   Renew Let's Encrypt Certs
+    job:    /usr/bin/certbot renew --quiet
+  become: yes

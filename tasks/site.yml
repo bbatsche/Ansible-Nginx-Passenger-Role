@@ -1,4 +1,10 @@
 ---
+- include: letsencrypt.yml
+  static: no
+  when:
+    - use_ssl
+    - use_letsencrypt
+
 # Either we are in production with a typical flat filesystem, or Vagrant with a shared folder structure
 # If it's vagrant, we assume the user has the user/group configured correctly, we just manage perms
 - name: Create Site Directory
@@ -37,7 +43,7 @@
     state: directory
     owner: www-data
     group: www-data
-    mode:  0755
+    mode:  0750
   become: yes
 
 - name: Copy index.html
