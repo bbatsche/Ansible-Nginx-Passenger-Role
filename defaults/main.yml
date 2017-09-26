@@ -5,3 +5,13 @@ site_type: ''
 copy_index: no
 
 max_upload_size: 10
+
+use_ssl: no
+use_letsencrypt: no
+
+privatekey_bits: 4096
+dhparam_bits: 2048
+
+cert_valid_days: 3650
+
+email_address: email@example.com

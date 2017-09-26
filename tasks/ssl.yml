@@ -1,0 +1,16 @@
+---
+- name: Generate Self Signed Certificate
+  command: >
+    openssl req -newkey rsa:{{ privatekey_bits }} -nodes -keyout /etc/ssl/private/selfsigned.key
+      -x509 -days {{ cert_valid_days }}
+      -subj "/CN=*/C={{ country_name | default('') }}/ST={{ state_name | default('') }}/L={{ locality_name | default('') }}/O={{ org_name | default('') }}/emailAddress={{ email_address }}"
+      -out /etc/ssl/certs/selfsigned.crt
+  args:
+    creates: /etc/ssl/certs/selfsigned.crt
+  become: yes
+
+- name: Generate DH Params
+  command: openssl dhparam -out /etc/ssl/certs/dhparam.pem {{ dhparam_bits }}
+  args:
+    creates: /etc/ssl/certs/dhparam.pem
+  become: yes

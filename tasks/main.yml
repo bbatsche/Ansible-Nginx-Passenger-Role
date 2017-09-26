@@ -16,60 +16,112 @@
     - nginx-extras
     - passenger
 
-- name: Copy HTML5 Boilerplate Configs
-  copy: src=h5bp dest=/etc/nginx/
+- name: Create HTML5 Boilerplate Config Directories
+  file: path=/etc/nginx/{{ item }} state=directory
   become: yes
-  notify: Restart Nginx
+  with_items:
+    - h5bp
+    - h5bp/directive-only
+    - h5bp/location
 
-- name: Create Default Site
-  copy: src=site.default.conf dest=/etc/nginx/sites-available/default mode=0600
-  become: yes
-  notify: Restart Nginx
-
-- name: Propogate Web Admin Group in Sites-Available
-  file:
-    path: /etc/nginx/sites-available
-    state: directory
-    owner: root
-    group: web-admin
-    mode: 02775
-  become: yes
-
-- name: Allow Web Admins to Write Sites-Available
-  acl:
-    name: /etc/nginx/sites-available
-    etype: group
-    entity: web-admin
-    permissions: rwx
-    state: present
-  become: yes
-
-- name: Enable Default Site
-  file:
-    src:   /etc/nginx/sites-available/default
-    dest:  /etc/nginx/sites-enabled/default
-    state: link
-  become: yes
-  notify: Restart Nginx
-
-- name: Create Log Directory
-  file: path=/var/log/nginx state=directory mode=0755 owner=www-data group=www-data
-  become: yes
-
-- name: Create Main Coniguration
+- name: Copy Nginx Coniguration
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
   become: yes
   notify: Restart Nginx
+  register: nginx_config
 
-- name: Copy HTML5 Boilerplate Main Config
+- name: Copy HTML5 Boilerplate Basic Config
   template: src=h5bp.conf.j2 dest=/etc/nginx/h5bp/basic.conf
   become: yes
   notify: Restart Nginx
 
+# Make sure we overwrite the default Nginx mime.types with H5BP version
 - name: Copy mime.types
-  file: src=mime.types dest=/etc/nginx/mime.types
+  copy: src=mime.types dest=/etc/nginx/h5bp/mime.types
   become: yes
   notify: Restart Nginx
+
+- name: Copy HTML5 Boilerplate Files
+  get_url:
+    url:  https://raw.githubusercontent.com/h5bp/server-configs-nginx/{{ h5bp_commit }}/h5bp/{{ item }}
+    dest: /etc/nginx/h5bp/{{ item }}
+  become: yes
+  notify: Restart Nginx
+  with_items:
+    - directive-only/cache-file-descriptors.conf
+    - directive-only/cross-domain-insecure.conf
+    - directive-only/extra-security.conf
+    - directive-only/no-transform.conf
+    - directive-only/ssl-stapling.conf
+    - directive-only/x-ua-compatible.conf
+    - location/cache-busting.conf
+    - location/cross-domain-fonts.conf
+    - location/protect-system-files.conf
+
+# Maintain our own version of expires.conf since it does a better job handling Expires & Cache-Control headers
+- name: Copy Expires Config
+  copy: src=expires.conf dest=/etc/nginx/h5bp/location/expires.conf
+  become: yes
+  notify: Restart Nginx
+
+# More secure SSL configuration than H5BP's defaults
+- name: Copy SSL Config
+  copy: src=ssl.conf dest=/etc/nginx/h5bp/directive-only/ssl.conf
+  become: yes
+  notify: Restart Nginx
+
+- name: Create Default Site
+  template: src=site.default.conf.j2 dest=/etc/nginx/sites-available/default
+  become: yes
+  notify: Restart Nginx
+  register: default_site_config
+
+- name: Enable Default Site
+  file:
+    src:   /etc/nginx/sites-available/default
+    dest:  /etc/nginx/sites-enabled/00-default
+    state: link
+  become: yes
+  notify: Restart Nginx
+  register: default_site_enabled
+
+- name: Remove Previous Default Site Link
+  file: name=/etc/nginx/sites-enabled/default state=absent
+  become: yes
+  notify: Restart Nginx
+
+- name: Set Permissions for Site Config Directories
+  file:
+    path:  /etc/nginx/{{ item }}
+    state: directory
+    owner: root
+    group: web-admin
+    mode:  02770
+  become: yes
+  with_items:
+    - sites-available
+    - sites-enabled
+
+- name: Create ACL for Site Config Directories
+  acl:
+    name:        /etc/nginx/{{ item }}
+    etype:       group
+    entity:      web-admin
+    permissions: rwx
+    state:       present
+  become: yes
+  with_items:
+    - sites-available
+    - sites-enabled
+
+- name: Create Log Directory
+  file:
+    path:  /var/log/nginx
+    state: directory
+    owner: www-data
+    group: www-data
+    mode:  0750
+  become: yes
 
 - name: Create HTTP Root
   file: path={{ http_root }} state=directory mode=02775
@@ -77,21 +129,23 @@
 
 # If HTTP root is an NFS mount we need to skip various ACL and permission related tasks
 # Disable warnings since Ansible's stat module doesn't return any info about the FS type
-- name: Check if HTTP Root is NFS
+- name: Check HTTP Root Filesystem
   command: stat -f -c %T {{ http_root }} warn=no
   register: http_root_fs
   changed_when: no
 
 - include: http_root_acl.yml
   static: no
-  when: >
-    not (
-      http_root_fs.stdout == "nfs" or
-      http_root_fs.stdout == "vmhgfs" or
-      http_root_fs.stdout == "vboxsf" or
-      http_root_fs.stdout == "prl_fs" or
-      http_root_fs.stdout == "fuseblk"
-    )
+  when:
+    - http_root_fs.stdout != "nfs"
+    - http_root_fs.stdout != "vmhgfs"
+    - http_root_fs.stdout != "vboxsf"
+    - http_root_fs.stdout != "prl_fs"
+    - http_root_fs.stdout != "fuseblk"
+
+- include: ssl.yml
+  static: no
+  when: use_ssl
 
 - include: site.yml
   static: no
