@@ -11,3 +11,6 @@ indent_size = 2
 
 [{Rakefile,Vagrantfile}]
 indent_size = 2
+
+[*.{conf,conf.j2}]
+indent_size = 2

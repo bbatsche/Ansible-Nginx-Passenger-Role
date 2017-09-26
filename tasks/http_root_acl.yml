@@ -1,5 +1,5 @@
 ---
-- name: Propogate www-data Group in HTTP Root
+- name: Set Permissions for HTTP Root
   file:
     path: "{{ http_root }}"
     state: directory
@@ -11,42 +11,23 @@
 - name: Allow www-data to Write HTTP Root
   acl:
     name: "{{ http_root }}"
-    etype: user
+    etype: group
     entity: www-data
     permissions: rwx
     state: present
   become: yes
 
-- name: Allow www-data to Write Future Directories
+- name: Add Default ACL for www-data to HTTP Root
   acl:
     name: "{{ http_root }}"
-    etype: user
+    etype: group
     entity: www-data
     permissions: rwx
     default: yes
     state: present
   become: yes
 
-- name: Allow Web Admins to Write HTTP Root
-  acl:
-    name: "{{ http_root }}"
-    etype: group
-    entity: web-admin
-    permissions: rwx
-    state: present
-  become: yes
-
-- name: Allow Web Admins Write to Future Directories
-  acl:
-    name: "{{ http_root }}"
-    etype: group
-    entity: web-admin
-    permissions: rwx
-    default: yes
-    state: present
-  become: yes
-
-- name: Set ACL Mask for Future Directories
+- name: Set ACL Mask for HTTP Root
   acl:
     name: "{{ http_root }}"
     etype: mask
