@@ -6,6 +6,10 @@ services:
   - docker
 
 language: generic
+cache:
+  directories:
+    - vendor/bundle
+    - $HOME/.cache/pip
 
 env:
   ## Need to support unsafe_writes for lineinfile to update /etc/hosts in Docker
