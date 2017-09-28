@@ -1,0 +1,56 @@
+---
+- hosts: vagrant
+
+  vars_files:
+    - ../../defaults/main.yml
+    - ../../vars/main.yml
+
+  pre_tasks:
+    - name: Clear index.html for test
+      file:
+        name: "{{ http_root }}/{{ domain }}/public/index.html"
+        state: absent
+      when: domain | default('') != ''
+
+    - name: Install NFS Packages
+      apt: name={{ item }}
+      with_items:
+        - rpcbind
+        - nfs-kernel-server
+      become: yes
+      notify: Restart NFS
+
+    - name: Create NFS Export Directory
+      file: path=/exports/http state=directory mode=0777
+      become: yes
+      notify: Restart NFS
+
+    - name: Create NFS Export Record
+      lineinfile:
+        dest: /etc/exports
+        line: /exports/http 127.0.0.1(rw,sync,no_subtree_check)
+        create: yes
+      become: yes
+      notify:
+        - Reload NFS Exports
+        - Remount NFS
+
+  tasks:
+    - include: ../../tasks/main.yml
+
+  handlers:
+    - include: ../../handlers/main.yml
+
+    - name: Restart NFS
+      service: name=nfs-kernel-server state=restarted
+      become: yes
+
+    - name: Reload NFS Exports
+      command: exportfs -ra
+      become: yes
+
+    - name: Remount NFS
+      mount: name={{ http_root }} fstype=nfs src=127.0.0.1:/exports/http state=mounted
+      become: yes
+
+

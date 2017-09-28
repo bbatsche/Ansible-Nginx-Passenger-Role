@@ -1,5 +1,6 @@
 require_relative "lib/ansible_helper"
 require_relative "bootstrap"
+require_relative "shared/nginx"
 
 RSpec.configure do |config|
   config.before :suite do
@@ -11,11 +12,9 @@ RSpec.configure do |config|
 end
 
 describe "Nginx config is valid" do
-  include_examples "nginx::config"
+  include_examples "nginx"
 end
 
-describe command("curl -I prod.dev") do
-  it "sends a 403 Forbidden response" do
-    expect(subject.stdout).to match /^HTTP\/1\.1 403 Forbidden$/
-  end
+describe command("curl -i prod.dev") do
+  include_examples("curl request", "403")
 end

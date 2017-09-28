@@ -1,5 +1,6 @@
 require_relative "lib/ansible_helper"
 require_relative "bootstrap"
+require_relative "shared/nginx"
 
 RSpec.configure do |config|
   config.before :suite do
@@ -11,15 +12,18 @@ RSpec.configure do |config|
 end
 
 describe "Nginx config is valid" do
-  include_examples "nginx::config"
+  include_examples "nginx"
 end
 
 describe command("curl -i dev-index.dev") do
-  it "sends a 200 OK response" do
-    expect(subject.stdout).to match /^HTTP\/1\.1 200 OK$/
-  end
+  include_examples("curl request", "200")
+  include_examples("curl request html")
 
   it "responds with index.html" do
     expect(subject.stdout).to match /Nginx is serving content on dev-index\.dev/
   end
+end
+
+describe "Request was logged" do
+  include_examples("access logs", {code: "200", domain: "dev-index.dev"})
 end

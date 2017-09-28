@@ -75,7 +75,7 @@ server {
   charset utf-8;
 
   # Logs for local domain
-  access_log /var/log/nginx/{{ domain }}/access.log;
+  access_log /var/log/nginx/{{ domain }}/access.log main;
   error_log  /var/log/nginx/{{ domain }}/error.log;
 
 {% if env_name == "dev" %}

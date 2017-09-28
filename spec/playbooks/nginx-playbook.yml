@@ -15,5 +15,16 @@
   tasks:
     - include: ../../tasks/main.yml
 
+  post_tasks:
+    - name: Create Test Assets
+      file:
+        name: "{{ http_root }}/{{ domain }}/public/{{ item }}"
+        state: touch
+      when: domain | default('') != ''
+      with_items:
+        - test.js
+        - test.css
+        - test.jpg
+
   handlers:
     - include: ../../handlers/main.yml
