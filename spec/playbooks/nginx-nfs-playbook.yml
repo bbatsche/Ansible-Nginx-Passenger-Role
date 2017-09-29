@@ -50,7 +50,5 @@
       become: yes
 
     - name: Remount NFS
-      mount: name={{ http_root }} fstype=nfs src=127.0.0.1:/exports/http state=mounted
+      mount: name=/srv/nfs fstype=nfs src=127.0.0.1:/exports/http state=mounted
       become: yes
-
-

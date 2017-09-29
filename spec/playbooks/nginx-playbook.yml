@@ -26,5 +26,11 @@
         - test.css
         - test.jpg
 
+    # Ansible's service module doesn't play well with Docker, so for testing just manually restart
+    - name: Force Nginx Restart
+      command: service nginx restart warn=no
+      become: yes
+      when: ansible_connection | default('smart') == 'docker'
+
   handlers:
     - include: ../../handlers/main.yml
