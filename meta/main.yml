@@ -11,6 +11,7 @@ galaxy_info:
     - xenial
   galaxy_tags:
   - hhvm
+  - lets encrypt
   - nginx
   - node
   - passenger
@@ -18,5 +19,7 @@ galaxy_info:
   - phusion
   - python
   - ruby
+  - ssl
+  - tls
   - web
 dependencies: []
