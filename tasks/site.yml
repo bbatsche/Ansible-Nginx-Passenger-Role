@@ -55,6 +55,9 @@
 - name: Add Domain to Hosts File
   lineinfile:
     dest: /etc/hosts
-    line: "127.0.0.1 {{ domain }}"
+    line: "127.0.0.1 {{ item }}"
     unsafe_writes: "{{ ansible_connection == 'docker' }}"
   become: yes
+  with_items:
+    - "{{ domain }}"
+    - www.{{domain }}

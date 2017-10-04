@@ -1,6 +1,7 @@
 require_relative "lib/ansible_helper"
 require_relative "bootstrap"
 require_relative "shared/nginx"
+require_relative "shared/redirect"
 
 RSpec.configure do |config|
   config.before :suite do
@@ -29,4 +30,8 @@ end
 
 describe "Request was logged" do
   include_examples("access logs", {code: "200", domain: "dev-nfs.dev"})
+end
+
+describe "www.* requests are redirected" do
+  include_examples("www redirect", "dev-nfs.dev")
 end

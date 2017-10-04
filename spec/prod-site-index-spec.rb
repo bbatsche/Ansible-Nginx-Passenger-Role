@@ -1,6 +1,8 @@
 require_relative "lib/ansible_helper"
 require_relative "bootstrap"
 require_relative "shared/nginx"
+require_relative "shared/redirect"
+require_relative "shared/cache"
 require "date"
 
 RSpec.configure do |config|
@@ -31,17 +33,21 @@ describe "Request was logged" do
   include_examples("access logs", {code: "200", domain: "prod-index.dev"})
 end
 
-describe command("curl -i prod-index.dev/test.css") do
+describe command("curl -I prod-index.dev/test.css") do
   include_examples("curl request", "200")
   include_examples("curl request cache", 365)
 end
 
-describe command("curl -i prod-index.dev/test.js") do
+describe command("curl -I prod-index.dev/test.js") do
   include_examples("curl request", "200")
   include_examples("curl request cache", 365)
 end
 
-describe command("curl -i prod-index.dev/test.jpg") do
+describe command("curl -I prod-index.dev/test.jpg") do
   include_examples("curl request", "200")
   include_examples("curl request cache", 30)
+end
+
+describe "www.* requests are redirected" do
+  include_examples("www redirect", "prod-index.dev")
 end
