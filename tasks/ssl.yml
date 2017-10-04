@@ -8,9 +8,11 @@
   args:
     creates: /etc/ssl/certs/selfsigned.crt
   become: yes
+  notify: Restart Nginx
 
 - name: Generate DH Params
   command: openssl dhparam -out /etc/ssl/certs/dhparam.pem {{ dhparam_bits }}
   args:
     creates: /etc/ssl/certs/dhparam.pem
   become: yes
+  notify: Restart Nginx

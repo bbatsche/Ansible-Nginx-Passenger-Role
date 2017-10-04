@@ -11,10 +11,9 @@
   file: path={{ http_root }}/letsencrypt state=directory
   become: yes
 
-- name: Reload Nginx Config
-  service: name=nginx state=reloaded
-  become: yes
-  when: nginx_config.changed or default_site_config.changed or default_site_enabled.changed
+# Need to make sure the main Nginx config has been loaded before attempting to request the cert
+- name: Restart Nginx
+  meta: flush_handlers
 
 - name: Generate Certificate
   command: certbot certonly -n --agree-tos -m {{ email_address }} {{ "--staging" if env_name == "dev" else "" }} --webroot -w {{ http_root }}/letsencrypt -d {{ domain }},www.{{ domain }}
