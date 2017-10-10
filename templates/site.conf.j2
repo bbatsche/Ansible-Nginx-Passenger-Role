@@ -95,20 +95,20 @@ server {
   index {{ "index.hh" if site_type == "hhvm" else "" }} index.php index.html index.htm;
 
   location / {
-    {% if site_type == "hhvm" %}
-      try_files $uri $uri/ /index.hh$is_args$args /index.php$is_args$args;
-    {% elif dynamic_php %}
-      try_files $uri $uri/ /index.php$is_args$args;
-    {% else %}
-      try_files $uri $uri/ =404;
-    {% endif %}
+  {% if site_type == "hhvm" %}
+    try_files $uri $uri/ /index.hh$is_args$args /index.php$is_args$args;
+  {% elif dynamic_php %}
+    try_files $uri $uri/ /index.php$is_args$args;
+  {% else %}
+    try_files $uri $uri/ =404;
+  {% endif %}
   }
 
   location ~ {{ "\.php$" if site_type == "php" else "\.(hh|php)$" }} {
-    {% if site_type == "php" -%}
-      # regex to split $uri to $fastcgi_script_name and $fastcgi_path
-      fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    {% endif %}
+  {% if site_type == "php" %}
+    # regex to split $uri to $fastcgi_script_name and $fastcgi_path
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+  {% endif %}
 
     try_files $fastcgi_script_name =404;
 
@@ -122,11 +122,7 @@ server {
     include fastcgi.conf;
 
     {% if site_type == "php" %}
-      {% if phpenv_root is defined and php_version is defined %}
     fastcgi_pass unix:{{ phpenv_root }}/versions/{{ php_version }}/var/run/{{ domain }}.sock;
-      {% else %}
-    fastcgi_pass unix:/var/run/php-fpm/{{ domain }}.sock;
-      {% endif %}
     {% else %}
     # Eventually directly managing HHVM repo in production will probably add some performance
     # improvements, but as yet there isn't a clear way to change the setting on a per host basis
