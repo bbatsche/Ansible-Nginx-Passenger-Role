@@ -8,7 +8,7 @@
   pre_tasks:
     - name: Clear index.html for test
       file:
-        name: "{{ http_root }}/{{ domain }}/public/index.html"
+        name: "{{ http_root }}/{{ domain }}/{{ public_directory }}/index.html"
         state: absent
       when: domain | default('') != ''
 

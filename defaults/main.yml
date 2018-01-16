@@ -1,6 +1,7 @@
 ---
 env_name: dev
 http_root: /srv/http
+public_directory: public
 site_type: ''
 copy_index: no
 

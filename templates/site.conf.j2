@@ -69,7 +69,7 @@ server {
   server_name {{ domain }};
 
   # Path for static files
-  root {{ http_root }}/{{ domain }}/public;
+  root {{ http_root }}/{{ domain }}/{{ public_directory }};
 
   #Specify a charset
   charset utf-8;
