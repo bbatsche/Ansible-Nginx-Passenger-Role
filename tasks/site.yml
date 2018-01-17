@@ -12,7 +12,7 @@
   become: yes
 
 - name: Create Public Directory
-  file: path={{ http_root }}/{{ domain }}/public state=directory mode=02775
+  file: path={{ http_root }}/{{ domain }}/{{ public_directory }} state=directory mode=02775
   become: yes
 
 - name: Copy Site Config
@@ -49,7 +49,7 @@
 - name: Copy index.html
   template:
     src: index.html.j2
-    dest: "{{ http_root }}/{{ domain }}/public/index.html"
+    dest: "{{ http_root }}/{{ domain }}/{{ public_directory }}/index.html"
   when: copy_index
 
 - name: Add Domain to Hosts File
