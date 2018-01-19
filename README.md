@@ -49,7 +49,7 @@ Example Playbook
 ```yml
 - hosts: servers
   roles:
-     - { role: bbatsche.Nginx, domain: my-test-domain.dev, site_type: ruby }
+     - { role: bbatsche.Nginx, domain: my-test-domain.test }
 ```
 
 License
