@@ -18,10 +18,9 @@ Role Variables
 - `public_directory` &mdash; Publicly visible directory for site, eg "public" or "htdocs". Default is "public"
 - `max_upload_size` &mdash; Maximum upload size in MB. Default is "10"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
-- `site_type` &mdash; Application server software this site uses. Undefined by default. Possible values are:
-    - hhvm
+- `nginx_configs` &mdash; Additional config files to add to the end of the domain's `server` block. These files should be copied to `/etc/nginx/conf.d`. Add configs for your particular application server type here. Default is an empty array
+- `site_type` &mdash; Application server software this site uses. _*Deprecated!* This value will be removed in an upcoming minor release._ Undefined by default. Possible values are:
     - node
-    - php
     - python
     - ruby
 - `copy_index` &mdash; Copy an index.html stub to the site. Default is no.
