@@ -98,6 +98,7 @@
   with_items:
     - sites-available
     - sites-enabled
+    - conf.d
 
 - name: Create ACL for Site Config Directories
   acl:

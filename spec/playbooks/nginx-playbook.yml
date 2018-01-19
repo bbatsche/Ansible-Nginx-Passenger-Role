@@ -12,6 +12,12 @@
         state: absent
       when: domain | default('') != ''
 
+    - name: Create Extra Config
+      copy:
+        content: "add_header X-Spec-Config spec-config-exists;"
+        dest: "/etc/nginx/conf.d/external-config.conf"
+      become: yes
+
   tasks:
     - include: ../../tasks/main.yml
 

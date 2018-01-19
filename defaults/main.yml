@@ -5,6 +5,8 @@ public_directory: public
 site_type: ''
 copy_index: no
 
+nginx_configs: []
+
 max_upload_size: 10
 
 use_ssl: no
