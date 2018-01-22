@@ -126,7 +126,7 @@ server {
   # Include the basic h5bp config set
   include h5bp/basic.conf;
   
-  {% for file in nginx_configs %}
+  {% for file in nginx_configs | default([]) %}
   include conf.d/{{ file }};
   {% endfor %}
 }
