@@ -93,7 +93,7 @@ server {
 
   index index.html index.htm;
 
-{% if site_type in ["node", "python", "ruby"] %}
+{% if site_type in ["python", "ruby"] %}
   passenger_enabled on;
 
   {% if env_name == "dev" %}
@@ -104,13 +104,7 @@ server {
 
   passenger_app_root {{ http_root }}/{{ domain }};
 
-  {% if site_type == "node" %}
-  passenger_app_type node;
-
-  # Explicitly set node startup file. Passenger seems to require this.
-  passenger_startup_file app.js;
-  passenger_nodejs {{ nvm_root }}/versions/node/{{ node_version }}/bin/node;
-  {% elif site_type == "ruby" %}
+  {% if site_type == "ruby" %}
   passenger_app_type rack;
   passenger_ruby {{ rbenv_root }}/shims/ruby;
   {% elif site_type == "python" %}
