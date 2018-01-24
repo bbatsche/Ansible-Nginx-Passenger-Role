@@ -5,4 +5,4 @@
 
 - name: Restart Passenger App
   command: passenger-config restart-app {{ http_root }}/{{ domain }} --ignore-app-not-running
-  when: site_type in ['node', 'python', 'ruby']
+  when: passenger_app or site_type in ['python', 'ruby']

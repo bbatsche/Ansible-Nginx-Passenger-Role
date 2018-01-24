@@ -14,3 +14,5 @@ privatekey_bits: 4096
 dhparam_bits: 2048
 
 cert_valid_days: 3650
+
+passenger_app: no
