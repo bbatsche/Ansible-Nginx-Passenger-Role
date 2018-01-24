@@ -4,5 +4,7 @@
   become: yes
 
 - name: Restart Passenger App
-  command: passenger-config restart-app {{ http_root }}/{{ domain }} --ignore-app-not-running
+  command: >-
+    passenger-config restart-app {{ http_root }}/{{ domain }} --ignore-app-not-running
+    {{ "--ignore-passenger-not-running" if ansible_connection | default('smart') == 'docker' else "" }}
   when: passenger_app or site_type in ['python', 'ruby']
