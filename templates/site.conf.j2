@@ -93,7 +93,7 @@ server {
 
   index index.html index.htm;
 
-{% if site_type in ["python", "ruby"] %}
+{% if site_type in ["python", "ruby"] or passenger_app %}
   passenger_enabled on;
 
   {% if env_name == "dev" %}
@@ -119,7 +119,7 @@ server {
 
   # Include the basic h5bp config set
   include h5bp/basic.conf;
-  
+
   {% for file in nginx_configs | default([]) %}
   include conf.d/{{ file }};
   {% endfor %}
