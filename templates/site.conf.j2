@@ -93,7 +93,7 @@ server {
 
   index index.html index.htm;
 
-{% if site_type in ["python", "ruby"] or passenger_app %}
+{% if site_type in ["python"] or passenger_app %}
   passenger_enabled on;
 
   {% if env_name == "dev" %}
@@ -104,10 +104,7 @@ server {
 
   passenger_app_root {{ http_root }}/{{ domain }};
 
-  {% if site_type == "ruby" %}
-  passenger_app_type rack;
-  passenger_ruby {{ rbenv_root }}/shims/ruby;
-  {% elif site_type == "python" %}
+  {% if site_type == "python" %}
   passenger_app_type wsgi;
     {% if env_name == "dev" %}
   passenger_python /usr/bin/python{{ python_version }};
