@@ -7,9 +7,11 @@ services:
 
 language: generic
 cache:
+  bundler: true
+  pip: true
+  apt: true
   directories:
-    - vendor/bundle
-    - $HOME/.cache/pip
+    - $HOME/.ansible/roles
 
 env:
   ## Need to support unsafe_writes for lineinfile to update /etc/hosts in Docker
