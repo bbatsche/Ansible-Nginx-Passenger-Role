@@ -20,8 +20,6 @@ Role Variables
 - `domain` &mdash; Domain name for site to create. Undefined by default.
 - `nginx_configs` &mdash; Additional config files to add to the end of the domain's `server` block. These files should be copied to `/etc/nginx/conf.d`. Add configs for your particular application server type here. Default is an empty array
 - `passenger_app` &mdash; Is the current domain a Passenger app (ie, Node, Ruby, Python)? Useful if the app needs to be restarted after updating configs. Default is no
-- `site_type` &mdash; Application server software this site uses. _**Deprecated!** This value will be removed in an upcoming minor release._ Undefined by default. Possible values are:
-    - python
 - `copy_index` &mdash; Copy an index.html stub to the site. Default is no.
 - `use_ssl` &mdash; Whether to serve content via SSL (really TLS). Default is no.
 - `use_letsencrypt` &mdash; Whether to use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate for a site. Otherwise a server wide self signed certificate will be used. Default is no.

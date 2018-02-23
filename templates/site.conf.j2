@@ -93,7 +93,7 @@ server {
 
   index index.html index.htm;
 
-{% if site_type in ["python"] or passenger_app %}
+{% if passenger_app %}
   passenger_enabled on;
 
   {% if env_name == "dev" %}
@@ -103,15 +103,6 @@ server {
   {% endif %}
 
   passenger_app_root {{ http_root }}/{{ domain }};
-
-  {% if site_type == "python" %}
-  passenger_app_type wsgi;
-    {% if env_name == "dev" %}
-  passenger_python /usr/bin/python{{ python_version }};
-    {% else %}
-  passenger_python {{ http_root }}/{{ domain }}/env/bin/python;
-    {% endif %}
-  {% endif %}
 {% endif %}
 
   # Include the basic h5bp config set
