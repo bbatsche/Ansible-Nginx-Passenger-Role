@@ -132,8 +132,7 @@
   register: http_root_fs
   changed_when: no
 
-- include: http_root_acl.yml
-  static: no
+- include_tasks: http_root_acl.yml
   when:
     - http_root_fs.stdout != "nfs"
     - http_root_fs.stdout != "vmhgfs"
@@ -141,10 +140,8 @@
     - http_root_fs.stdout != "prl_fs"
     - http_root_fs.stdout != "fuseblk"
 
-- include: ssl.yml
-  static: no
+- include_tasks: ssl.yml
   when: use_ssl
 
-- include: site.yml
-  static: no
+- include_tasks: site.yml
   when: domain is defined
