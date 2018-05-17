@@ -1,3 +1,7 @@
+{% if ansible_distribution_release == "bionic" %}
+include modules-enabled/*;
+{% endif %}
+
 # Configuration File - Nginx Server Configs
 # http://nginx.org/en/docs/dirindex.html
 
