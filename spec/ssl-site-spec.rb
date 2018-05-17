@@ -22,7 +22,7 @@ describe command("curl -ik https://ssl-index.dev") do
   include_examples("curl request html")
 
   it "instructs the browser to only use HTTPS" do
-    expect(subject.stdout).to match /^Strict-Transport-Security: max-age=\d+; includeSubDomains; preload/
+    expect(subject.stdout).to match /^Strict-Transport-Security: max-age=\d+; includeSubDomains; preload/i
   end
 
   it "responds with index.html" do
@@ -35,8 +35,8 @@ describe "Request was logged" do
 end
 
 describe command("echo | openssl s_client -showcerts -servername ssl-index.dev -connect ssl-index.dev:443") do
-  it "generated a certificate with out params" do
-    expect(subject.stdout).to match %r{/CN=\*}
+  it "generated a certificate with correct params" do
+    expect(subject.stdout).to match %r{/CN=#{Regexp.quote(host_inventory["fqdn"])}}
     expect(subject.stdout).to match %r{/O=Server Spec}
     expect(subject.stdout).to match %r{/emailAddress=spec@example.com}
   end
