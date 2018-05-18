@@ -1,7 +1,20 @@
 ---
-- name: Install PyOpenSSL
-  apt: name=python-openssl state=present
+- name: Install Python / OpenSSL Libraries
+  apt: name={{ item }} state=present
   become: yes
+  loop:
+    - python-pip
+    - python-dev
+    - libssl-dev
+    - libffi-dev
+
+# Switch to apt version after support for Trusty drops
+- name: Install PyOpenSSL
+  pip: name={{ item }} state=latest # make sure Trusty updates pyOpenSSL
+  become: yes
+  loop:
+    - setuptools
+    - pyopenssl
 
 - name: Create CSR Directory
   file:
