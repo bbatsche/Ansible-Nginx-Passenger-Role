@@ -13,6 +13,9 @@
   pip: name={{ item }} state=latest # make sure Trusty updates pyOpenSSL
   become: yes
   with_items:
+    - cffi
+    - ipaddress
+    - enum34
     - setuptools
     - pyopenssl
 
