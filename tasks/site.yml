@@ -1,6 +1,6 @@
 ---
-- include: letsencrypt.yml
-  static: no
+- name: Configure Let's Encrypt
+  include_tasks: letsencrypt.yml
   when:
     - use_ssl
     - use_letsencrypt

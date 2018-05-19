@@ -25,7 +25,7 @@
       become: yes
 
   tasks:
-    - include: ../../tasks/main.yml
+    - import_tasks: ../../tasks/main.yml
 
   post_tasks:
     - name: Create Test Assets
@@ -45,4 +45,4 @@
       when: ansible_connection | default('smart') == 'docker'
 
   handlers:
-    - include: ../../handlers/main.yml
+    - import_tasks: ../../handlers/main.yml
