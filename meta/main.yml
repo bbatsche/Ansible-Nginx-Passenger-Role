@@ -3,12 +3,13 @@ galaxy_info:
   author: Ben Batschelet
   description: Install and configure Nginx and Phusion Passenger along with any number of server blocks (aka vhosts).
   license: MIT
-  min_ansible_version: 2.1
+  min_ansible_version: 2.4
   platforms:
   - name: Ubuntu
     versions:
     - trusty
     - xenial
+    - bionic
   galaxy_tags:
   - hhvm
   - lets encrypt

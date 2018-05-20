@@ -1,2 +1,12 @@
 ---
+passenger_apt_packages:
+  trusty:
+    - nginx-extras
+    - passenger
+  xenial:
+    - nginx-extras
+    - passenger
+  bionic:
+    - nginx-extras
+    - libnginx-mod-http-passenger
 h5bp_commit: c5c6602232e0976d9e69d69874aa84d2a2698265

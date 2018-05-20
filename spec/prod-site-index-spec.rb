@@ -1,8 +1,4 @@
-require_relative "lib/ansible_helper"
-require_relative "bootstrap"
-require_relative "shared/nginx"
-require_relative "shared/redirect"
-require_relative "shared/cache"
+require_relative "lib/bootstrap"
 require "date"
 
 RSpec.configure do |config|

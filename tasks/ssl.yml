@@ -1,12 +1,55 @@
 ---
+- name: Install Python / OpenSSL Libraries
+  apt: name={{ item }} state=present
+  become: yes
+  with_items:
+    - python-pip
+    - python-dev
+    - libssl-dev
+    - libffi-dev
+
+# Switch to apt version after support for Trusty drops
+- name: Install PyOpenSSL
+  pip: name={{ item }} state=latest # make sure Trusty updates pyOpenSSL
+  become: yes
+  with_items:
+    - cffi
+    - ipaddress
+    - enum34
+    - setuptools
+    - pyopenssl
+
+- name: Create CSR Directory
+  file:
+    name: /etc/ssl/csr
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Create OpenSSL Private Key
+  openssl_privatekey:
+    path: /etc/ssl/private/selfsigned.key
+    size: "{{ privatekey_bits }}"
+  become: yes
+
+- name: Generate Certificate Signing Request
+  openssl_csr:
+    path:                   /etc/ssl/csr/selfsigned.csr
+    privatekey_path:        /etc/ssl/private/selfsigned.key
+    common_name:            "{{ ansible_fqdn }}"
+    country_name:           "{{ country_name | default(omit) }}"
+    state_or_province_name: "{{ state_name | default(omit) }}"
+    locality_name:          "{{ locality_name | default(omit) }}"
+    organization_name:      "{{ org_name | default(omit) }}"
+    email_address:          "{{ email_address }}"
+  become: yes
+
 - name: Generate Self Signed Certificate
-  command: >
-    openssl req -newkey rsa:{{ privatekey_bits }} -nodes -keyout /etc/ssl/private/selfsigned.key
-      -x509 -days {{ cert_valid_days }}
-      -subj "/CN=*/C={{ country_name | default('') }}/ST={{ state_name | default('') }}/L={{ locality_name | default('') }}/O={{ org_name | default('') }}/emailAddress={{ email_address }}"
-      -out /etc/ssl/certs/selfsigned.crt
-  args:
-    creates: /etc/ssl/certs/selfsigned.crt
+  openssl_certificate:
+    path: /etc/ssl/certs/selfsigned.crt
+    privatekey_path: /etc/ssl/private/selfsigned.key
+    csr_path: /etc/ssl/csr/selfsigned.csr
+    provider: selfsigned
   become: yes
   notify: Restart Nginx
 
