@@ -1,7 +1,12 @@
 Ansible Nginx Passenger Role
 ============================
 
-[![Build Status](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role.svg)](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role) [![Ansible Galaxy](https://img.shields.io/ansible/role/7334.svg)](https://galaxy.ansible.com/bbatsche/Nginx)
+[![Build Status](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role.svg)](https://travis-ci.org/bbatsche/Ansible-Nginx-Passenger-Role)
+[![License](https://img.shields.io/github/license/bbatsche/Ansible-Nginx-Passenger-Role.svg)](LICENSE)
+[![Role Name](https://img.shields.io/ansible/role/27174.svg)](https://galaxy.ansible.com/bbatsche/Nginx)
+[![Release Version](https://img.shields.io/github/tag/bbatsche/Ansible-Nginx-Passenger-Role.svg)](https://galaxy.ansible.com/bbatsche/Nginx)
+[![Downloads](https://img.shields.io/ansible/role/d/27174.svg)](https://galaxy.ansible.com/bbatsche/Nginx)
+
 
 This role will install Nginx server along with Phusion Passenger bindings for serving Node, Python, or Ruby. It can also setup and configure a site for a given domain.
 
