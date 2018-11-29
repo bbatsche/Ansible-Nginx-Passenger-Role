@@ -10,9 +10,8 @@
   become: yes
 
 - name: Install
-  apt: name={{ item }} state=present
+  apt: name={{ passenger_apt_packages[ansible_distribution_release] }} state=present
   become: yes
-  with_items: "{{ passenger_apt_packages[ansible_distribution_release] }}"
 
 - name: Enable Passenger Module
   file:
@@ -25,10 +24,14 @@
 - name: Create HTML5 Boilerplate Config Directories
   file: path=/etc/nginx/{{ item }} state=directory
   become: yes
-  with_items:
+  loop:
+    - conf.d
     - h5bp
-    - h5bp/directive-only
+    - h5bp/internet_explorer
     - h5bp/location
+    - h5bp/security
+    - h5bp/ssl
+    - h5bp/web_performance
 
 - name: Copy Nginx Coniguration
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
@@ -41,8 +44,10 @@
   notify: Restart Nginx
 
 # Make sure we overwrite the default Nginx mime.types with H5BP version
-- name: Copy mime.types
-  copy: src=mime.types dest=/etc/nginx/h5bp/mime.types
+- name: Copy HTML5 mime.types
+  get_url:
+    url:  https://raw.githubusercontent.com/h5bp/server-configs-nginx/{{ h5bp_commit }}/mime.types
+    dest: /etc/nginx/mime.types
   become: yes
   notify: Restart Nginx
 
@@ -52,28 +57,30 @@
     dest: /etc/nginx/h5bp/{{ item }}
   become: yes
   notify: Restart Nginx
-  with_items:
-    - directive-only/cache-file-descriptors.conf
-    - directive-only/cross-domain-insecure.conf
-    - directive-only/extra-security.conf
-    - directive-only/no-transform.conf
-    - directive-only/ssl-stapling.conf
-    - directive-only/x-ua-compatible.conf
-    - location/cache-busting.conf
-    - location/cross-domain-fonts.conf
-    - location/protect-system-files.conf
+  loop:
+    - internet_explorer/x-ua-compatible.conf
+    - location/security_file_access.conf
+    - security/server_software_information.conf
+    - security/strict-transport-security.conf
+    - security/x-content-type-options.conf
+    - security/x-frame-options.conf
+    - security/x-xss-protection.conf
+    - ssl/certificate_files.conf
+    - ssl/ocsp_stapling.conf
+    - ssl/policy_modern.conf
+    - ssl/ssl_engine.conf
+    - web_performance/cache-file-descriptors.conf
+    - web_performance/compression.conf
+    - web_performance/no-transform.conf
 
 # Maintain our own version of expires.conf since it does a better job handling Expires & Cache-Control headers
-- name: Copy Expires Config
-  copy: src=expires.conf dest=/etc/nginx/h5bp/location/expires.conf
+- name: Copy Custom Configs
+  copy: src={{ item }} dest=/etc/nginx/conf.d/{{ item }}
   become: yes
   notify: Restart Nginx
-
-# More secure SSL configuration than H5BP's defaults
-- name: Copy SSL Config
-  copy: src=ssl.conf dest=/etc/nginx/h5bp/directive-only/ssl.conf
-  become: yes
-  notify: Restart Nginx
+  loop:
+    - expires.conf
+    - ssl.conf
 
 - name: Create Default Site
   template: src=site.default.conf.j2 dest=/etc/nginx/sites-available/default
@@ -101,7 +108,7 @@
     group: web-admin
     mode:  02770
   become: yes
-  with_items:
+  loop:
     - sites-available
     - sites-enabled
     - conf.d
@@ -114,7 +121,7 @@
     permissions: rwx
     state:       present
   become: yes
-  with_items:
+  loop:
     - sites-available
     - sites-enabled
 

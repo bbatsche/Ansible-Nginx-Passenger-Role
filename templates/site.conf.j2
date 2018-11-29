@@ -23,18 +23,17 @@ server {
   # listen on the wrong host
   server_name www.{{ domain }};
 
-  include h5bp/directive-only/ssl.conf;
+  include conf.d/ssl.conf;
 
   {% if use_letsencrypt %}
-  include h5bp/directive-only/ssl-stapling.conf;
+  include h5bp/ssl/oscp_stapling.conf;
 
   ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
 
   ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
   {% else %}
-  ssl_certificate     /etc/ssl/certs/selfsigned.crt;
-  ssl_certificate_key /etc/ssl/private/selfsigned.key;
+  include h5bp/ssl/certificate_files.conf;
   {% endif %}
 
   # and redirect to the non-www host (declared below)
@@ -47,18 +46,17 @@ server {
   listen [::]:443 ssl http2;
   listen 443 ssl http2;
 
-  include h5bp/directive-only/ssl.conf;
+  include conf.d/ssl.conf;
 
   {% if use_letsencrypt %}
-  include h5bp/directive-only/ssl-stapling.conf;
+  include h5bp/ssl/oscp_stapling.conf;
 
   ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
 
   ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
   {% else %}
-  ssl_certificate     /etc/ssl/certs/selfsigned.crt;
-  ssl_certificate_key /etc/ssl/private/selfsigned.key;
+  include h5bp/ssl/certificate_files.conf;
   {% endif %}
 {% else %}
   listen [::]:80;
@@ -108,7 +106,7 @@ server {
   # Include the basic h5bp config set
   include h5bp/basic.conf;
 
-  {% for file in nginx_configs | default([]) %}
+{% for file in nginx_configs | default([]) %}
   include conf.d/{{ file }};
-  {% endfor %}
+{% endfor %}
 }

@@ -9,4 +9,5 @@ passenger_apt_packages:
   bionic:
     - nginx-extras
     - libnginx-mod-http-passenger
-h5bp_commit: c5c6602232e0976d9e69d69874aa84d2a2698265
+
+h5bp_commit: 959839d81fe35084d4a62712bbd29825b2d31d41

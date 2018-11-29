@@ -13,10 +13,10 @@
       when: domain | default('') != ''
 
     - name: Install NFS Packages
-      apt: name={{ item }}
-      with_items:
-        - rpcbind
-        - nfs-kernel-server
+      apt:
+        name:
+          - rpcbind
+          - nfs-kernel-server
       become: yes
       notify: Restart NFS
 

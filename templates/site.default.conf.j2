@@ -13,19 +13,18 @@ server {
   listen [::]:443 ssl http2 default_server ipv6only=on;
   listen 443 ssl http2 default_server;
 
-  include h5bp/directive-only/ssl.conf;
+  include conf.d/ssl.conf;
+  include h5bp/ssl/certificate_files.conf;
 
-  ssl_certificate     /etc/ssl/certs/selfsigned.crt;
-  ssl_certificate_key /etc/ssl/private/selfsigned.key;
-{% endif %}
-
-  server_name _;
-
+  {% if use_letsencrypt %}
   location /.well-known/ {
     root {{ http_root }}/letsencrypt;
 
     include h5bp/basic.conf;
   }
+  {% endif %}
+{% endif %}
+  server_name _;
 
   location / {
     return 444;

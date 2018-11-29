@@ -7,15 +7,15 @@
 
 # Either we are in production with a typical flat filesystem, or Vagrant with a shared folder structure
 # If it's vagrant, we assume the user has the user/group configured correctly, we just manage perms
-- name: Create Site Directory
+- name: Create {{ domain }} Directory
   file: path={{ http_root }}/{{ domain }} state=directory mode=02775
   become: yes
 
-- name: Create Public Directory
+- name: Create {{ domain }} Public Directory
   file: path={{ http_root }}/{{ domain }}/{{ public_directory }} state=directory mode=02775
   become: yes
 
-- name: Copy Site Config
+- name: Copy {{ domain }} Config
   template:
     src:   site.conf.j2
     dest:  /etc/nginx/sites-available/{{ domain }}
@@ -27,7 +27,7 @@
     - Restart Nginx
     - Restart Passenger App
 
-- name: Activate Site
+- name: Activate {{ domain }}
   file:
     src:   /etc/nginx/sites-available/{{ domain }}
     dest:  /etc/nginx/sites-enabled/{{ domain }}
@@ -37,7 +37,7 @@
     - Restart Nginx
     - Restart Passenger App
 
-- name: Create Site Log Directory
+- name: Create {{ domain }} Log Directory
   file:
     path:  /var/log/nginx/{{ domain }}
     state: directory
@@ -52,12 +52,12 @@
     dest: "{{ http_root }}/{{ domain }}/{{ public_directory }}/index.html"
   when: copy_index
 
-- name: Add Domain to Hosts File
+- name: Add {{ domain }} to Hosts File
   lineinfile:
     dest: /etc/hosts
     line: "127.0.0.1 {{ item }}"
     unsafe_writes: "{{ ansible_connection == 'docker' }}"
   become: yes
-  with_items:
+  loop:
     - "{{ domain }}"
     - www.{{domain }}
