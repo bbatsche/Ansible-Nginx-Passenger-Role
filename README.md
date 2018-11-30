@@ -36,7 +36,8 @@ Role Variables
 - `state_name` &mdash; State or province name to use when generating self signed certificate. Undefined by default.
 - `locality_name` &mdash; City or locality name to use when generating self signed certificate. Undefined by default.
 - `org_name` &mdash; Organization name to use when generating self signed certificate. Undefined by default.
-- `h5bp_commit` &mdash; Git hash to use for pulling files from [HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-nginx). Default is "c5c6602232e0976d9e69d69874aa84d2a2698265".
+- `h5bp_commit` &mdash; Git hash to use for pulling files from [HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-nginx). Default is "959839d81fe35084d4a62712bbd29825b2d31d41".
+- `setuptools_version` &mdash; Version of `setuptools` to install via Pip. Default is 40.6.2.
 
 SSL & Let's Encrypt
 -------------------

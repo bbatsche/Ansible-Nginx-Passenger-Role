@@ -1,23 +1,27 @@
 ---
 - name: Install Python / OpenSSL Libraries
-  apt: name={{ item }} state=present
+  apt:
+    name:
+      - "{{ 'python3-pip' if ansible_python.version.major == 3 else 'python-pip' }}"
+      - "{{ 'python3-dev' if ansible_python.version.major == 4 else 'python-dev' }}"
+      - libssl-dev
+      - libffi-dev
+    state: present
   become: yes
-  with_items:
-    - "{{ 'python3-pip' if ansible_python.version.major == 3 else 'python-pip' }}"
-    - "{{ 'python3-dev' if ansible_python.version.major == 4 else 'python-dev' }}"
-    - libssl-dev
-    - libffi-dev
 
-# Switch to apt version after support for Trusty drops
-- name: Install PyOpenSSL
-  pip: name={{ item }} state=latest # make sure Trusty updates pyOpenSSL
+# Switch these two to apt version after support for Trusty drops
+- name: Update Setuptools
+  pip: name=setuptools version={{ setuptools_version }}
   become: yes
-  with_items:
-    - cffi
-    - ipaddress
-    - enum34
-    - setuptools
-    - pyopenssl
+- name: Install PyOpenSSL
+  pip:
+    name:
+      - cffi
+      - ipaddress
+      - enum34
+      - pyopenssl
+    state: latest # make sure Trusty updates pyOpenSSL
+  become: yes
 
 - name: Create CSR Directory
   file:
@@ -28,14 +32,14 @@
 
 - name: Create OpenSSL Private Key
   openssl_privatekey:
-    path: /etc/ssl/private/selfsigned.key
+    path: /etc/nginx/default_ssl.key
     size: "{{ privatekey_bits }}"
   become: yes
 
 - name: Generate Certificate Signing Request
   openssl_csr:
-    path:                   /etc/ssl/csr/selfsigned.csr
-    privatekey_path:        /etc/ssl/private/selfsigned.key
+    path:                   /etc/nginx/default_ssl.csr
+    privatekey_path:        /etc/nginx/default_ssl.key
     common_name:            "{{ ansible_fqdn }}"
     country_name:           "{{ country_name | default(omit) }}"
     state_or_province_name: "{{ state_name | default(omit) }}"
@@ -46,10 +50,10 @@
 
 - name: Generate Self Signed Certificate
   openssl_certificate:
-    path: /etc/ssl/certs/selfsigned.crt
-    privatekey_path: /etc/ssl/private/selfsigned.key
-    csr_path: /etc/ssl/csr/selfsigned.csr
-    provider: selfsigned
+    path:            /etc/nginx/default_ssl.crt
+    privatekey_path: /etc/nginx/default_ssl.key
+    csr_path:        /etc/nginx/default_ssl.csr
+    provider:        selfsigned
   become: yes
   notify: Restart Nginx
 

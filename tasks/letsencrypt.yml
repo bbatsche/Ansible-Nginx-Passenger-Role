@@ -15,7 +15,7 @@
 - name: Restart Nginx
   meta: flush_handlers
 
-- name: Generate Certificate
+- name: Generate Certificate for {{ domain }}
   command: certbot certonly -n --agree-tos -m {{ email_address }} {{ "--staging" if env_name == "dev" else "" }} --webroot -w {{ http_root }}/letsencrypt -d {{ domain }},www.{{ domain }}
   args:
     creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem
@@ -27,7 +27,7 @@
     regexp:   '^{{ item }}\s*=\s*.+(,?)$'
     line:     '{{ item }} = {{ http_root }}/{{ domain }}/public\1'
     backrefs: yes
-  with_items:
+  loop:
     - webroot_path
     - www.{{ domain }}
     - "{{ domain }}"

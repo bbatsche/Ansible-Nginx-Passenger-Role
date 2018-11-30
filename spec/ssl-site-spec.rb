@@ -22,7 +22,7 @@ describe command("curl -ik https://ssl-index.dev") do
   include_examples("curl request html")
 
   it "instructs the browser to only use HTTPS" do
-    expect(subject.stdout).to match /^Strict-Transport-Security: max-age=\d+; includeSubDomains; preload/i
+    expect(subject.stdout).to match /^Strict-Transport-Security: max-age=\d+; includeSubDomains/i
   end
 
   it "responds with index.html" do
