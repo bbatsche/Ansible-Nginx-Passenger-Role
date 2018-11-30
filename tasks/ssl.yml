@@ -9,14 +9,16 @@
     state: present
   become: yes
 
-# Switch to apt version after support for Trusty drops
+# Switch these two to apt version after support for Trusty drops
+- name: Update Setuptools
+  pip: name=setuptools version={{ setuptools_version }}
+  become: yes
 - name: Install PyOpenSSL
   pip:
     name:
       - cffi
       - ipaddress
       - enum34
-      - setuptools
       - pyopenssl
     state: latest # make sure Trusty updates pyOpenSSL
   become: yes
