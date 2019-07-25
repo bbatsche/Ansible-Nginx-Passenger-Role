@@ -1,9 +1,7 @@
 ---
-- name: Configure Let's Encrypt
-  include_tasks: letsencrypt.yml
-  when:
-    - use_ssl
-    - use_letsencrypt
+- name: Configure Site SSL
+  include_tasks: site_ssl.yml
+  when: use_ssl
 
 # Either we are in production with a typical flat filesystem, or Vagrant with a shared folder structure
 # If it's vagrant, we assume the user has the user/group configured correctly, we just manage perms

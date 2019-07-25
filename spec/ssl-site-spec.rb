@@ -34,11 +34,13 @@ describe "Request was logged" do
   include_examples("access logs", {code: "200", domain: "ssl-index.dev"})
 end
 
-describe command("echo | openssl s_client -showcerts -servername ssl-index.dev -connect ssl-index.dev:443") do
+describe command("echo | openssl s_client -showcerts -servername ssl-index.dev -connect ssl-index.dev:443 | openssl x509 -noout -text") do
   it "generated a certificate with correct params" do
-    expect(subject.stdout).to match %r{/CN=#{Regexp.quote(host_inventory["fqdn"])}}
-    expect(subject.stdout).to match %r{/O=Server Spec}
-    expect(subject.stdout).to match %r{/emailAddress=spec@example.com}
+    expect(subject.stdout).to match %r{/?CN\s*=\s*ssl-index\.dev}
+    expect(subject.stdout).to match %r{DNS:ssl-index\.dev}
+    expect(subject.stdout).to match %r{DNS:www\.ssl-index\.dev}
+    expect(subject.stdout).to match %r{/?O\s*=\s*Server Spec}
+    expect(subject.stdout).to match %r{/?emailAddress\s*=\s*spec@example.com}
   end
 end
 

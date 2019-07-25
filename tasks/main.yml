@@ -21,25 +21,22 @@
   become: yes
   when: ansible_distribution_release == "bionic"
 
-- name: Create HTML5 Boilerplate Config Directories
+- name: Create Config Directories
   file: path=/etc/nginx/{{ item }} state=directory
   become: yes
   loop:
     - conf.d
+    - certs
     - h5bp
     - h5bp/internet_explorer
     - h5bp/location
+    - h5bp/media_types
     - h5bp/security
     - h5bp/ssl
     - h5bp/web_performance
 
 - name: Copy Nginx Coniguration
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
-  become: yes
-  notify: Restart Nginx
-
-- name: Copy HTML5 Boilerplate Basic Config
-  template: src=h5bp.conf.j2 dest=/etc/nginx/h5bp/basic.conf
   become: yes
   notify: Restart Nginx
 
@@ -60,6 +57,10 @@
   loop:
     - internet_explorer/x-ua-compatible.conf
     - location/security_file_access.conf
+    - media_types/character_encodings.conf
+    - media_types/media_types.conf
+    - security/content-security-policy.conf
+    - security/referrer-policy.conf
     - security/server_software_information.conf
     - security/strict-transport-security.conf
     - security/x-content-type-options.conf
@@ -69,18 +70,18 @@
     - ssl/ocsp_stapling.conf
     - ssl/policy_modern.conf
     - ssl/ssl_engine.conf
+    - web_performance/cache_expiration.conf
     - web_performance/cache-file-descriptors.conf
     - web_performance/compression.conf
-    - web_performance/no-transform.conf
 
-# Maintain our own version of expires.conf since it does a better job handling Expires & Cache-Control headers
 - name: Copy Custom Configs
   copy: src={{ item }} dest=/etc/nginx/conf.d/{{ item }}
   become: yes
   notify: Restart Nginx
   loop:
-    - expires.conf
+    - svgz-compression.conf
     - ssl.conf
+    - h5bp.conf
 
 - name: Create Default Site
   template: src=site.default.conf.j2 dest=/etc/nginx/sites-available/default
@@ -154,7 +155,7 @@
     - http_root_fs.stdout != "prl_fs"
     - http_root_fs.stdout != "fuseblk"
 
-- name: Configure SSL
+- name: Configure Server SSL
   include_tasks: ssl.yml
   when: use_ssl
 
