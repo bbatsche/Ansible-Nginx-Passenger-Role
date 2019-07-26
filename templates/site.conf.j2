@@ -27,6 +27,7 @@ server {
 
   {% if use_letsencrypt %}
   include h5bp/ssl/oscp_stapling.conf;
+  include h5bp/security/strict-transport-security.conf;
 
   ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
 
