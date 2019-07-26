@@ -21,10 +21,6 @@ describe command("curl -ik https://ssl-index.dev") do
   include_examples("curl request", "200")
   include_examples("curl request html")
 
-  it "instructs the browser to only use HTTPS" do
-    expect(subject.stdout).to match /^Strict-Transport-Security: max-age=\d+; includeSubDomains/i
-  end
-
   it "responds with index.html" do
     expect(subject.stdout).to match /Nginx is serving content on ssl-index\.dev/
   end

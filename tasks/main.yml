@@ -44,7 +44,14 @@
 - name: Copy HTML5 mime.types
   get_url:
     url:  https://raw.githubusercontent.com/h5bp/server-configs-nginx/{{ h5bp_commit }}/mime.types
-    dest: /etc/nginx/mime.types
+    dest: /etc/nginx/h5bp/mime.types
+  become: yes
+  notify: Restart Nginx
+
+- name: Remove Default Nginx mime.types
+  file:
+    name:  /etc/nginx/mime.types
+    state: absent
   become: yes
   notify: Restart Nginx
 
@@ -58,7 +65,6 @@
     - internet_explorer/x-ua-compatible.conf
     - location/security_file_access.conf
     - media_types/character_encodings.conf
-    - media_types/media_types.conf
     - security/content-security-policy.conf
     - security/referrer-policy.conf
     - security/server_software_information.conf
@@ -79,9 +85,10 @@
   become: yes
   notify: Restart Nginx
   loop:
-    - svgz-compression.conf
-    - ssl.conf
     - h5bp.conf
+    - media_types.conf
+    - ssl.conf
+    - svgz-compression.conf
 
 - name: Create Default Site
   template: src=site.default.conf.j2 dest=/etc/nginx/sites-available/default
