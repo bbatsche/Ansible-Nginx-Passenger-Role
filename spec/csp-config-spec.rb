@@ -34,6 +34,6 @@ describe command("curl -i csp-config.test") do
   include_examples("curl request html")
 
   it "includes a custom CSP header" do
-    expect(subject.stdout).to match /^Content-Security-Policy: default-src \*; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'none'; img-src 'self' data: \*.example.com; font-src 'none'$/i
+    expect(subject.stdout).to match /^Content-Security-Policy: default-src \*; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'none'; img-src 'self' data: \*.example.com; font-src 'none'/i
   end
 end
