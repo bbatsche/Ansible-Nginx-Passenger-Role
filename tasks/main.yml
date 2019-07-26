@@ -75,6 +75,7 @@
     - ssl/certificate_files.conf
     - ssl/ocsp_stapling.conf
     - ssl/policy_modern.conf
+    - ssl/policy_intermediate.conf
     - ssl/ssl_engine.conf
     - web_performance/cache_expiration.conf
     - web_performance/cache-file-descriptors.conf
@@ -87,7 +88,7 @@
   loop:
     - h5bp.conf
     - media_types.conf
-    - ssl.conf
+    - ssl_policy_intermediate.conf
     - svgz-compression.conf
 
 - name: Create Default Site

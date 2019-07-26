@@ -63,3 +63,10 @@
     creates: /etc/ssl/certs/dhparam.pem
   become: yes
   notify: Restart Nginx
+
+- name: Copy SSL Coniguration
+  template:
+    src:  ssl.conf.j2
+    dest: /etc/nginx/conf.d/ssl.conf
+  become: yes
+  notify: Restart Nginx
