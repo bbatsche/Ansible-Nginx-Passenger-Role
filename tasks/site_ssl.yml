@@ -1,0 +1,35 @@
+---
+- name: Configure Let's Encrypt
+  include_tasks: letsencrypt.yml
+  when: use_letsencrypt
+
+- name: Configure Self Signed Certificate
+  block:
+    - name: Create OpenSSL Private Key
+      openssl_privatekey:
+        path: /etc/nginx/certs/{{ domain }}.key
+        size: "{{ privatekey_bits }}"
+      become: yes
+
+    - name: Generate Certificate Signing Request
+      openssl_csr:
+        path:                   /etc/nginx/certs/{{ domain }}.csr
+        privatekey_path:        /etc/nginx/certs/{{ domain }}.key
+        common_name:            "{{ domain }}"
+        subject_alt_name:       "DNS:{{ domain }},DNS:www.{{ domain }}"
+        country_name:           "{{ country_name | default(omit) }}"
+        state_or_province_name: "{{ state_name | default(omit) }}"
+        locality_name:          "{{ locality_name | default(omit) }}"
+        organization_name:      "{{ org_name | default(omit) }}"
+        email_address:          "{{ email_address }}"
+      become: yes
+
+    - name: Generate Self Signed Certificate
+      openssl_certificate:
+        path:            /etc/nginx/certs/{{ domain }}.crt
+        privatekey_path: /etc/nginx/certs/{{ domain }}.key
+        csr_path:        /etc/nginx/certs/{{ domain }}.csr
+        provider:        selfsigned
+      become: yes
+      notify: Restart Nginx
+  when: not use_letsencrypt

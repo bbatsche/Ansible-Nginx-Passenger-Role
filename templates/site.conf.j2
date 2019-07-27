@@ -27,13 +27,15 @@ server {
 
   {% if use_letsencrypt %}
   include h5bp/ssl/oscp_stapling.conf;
+  include h5bp/security/strict-transport-security.conf;
 
   ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
 
   ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
   {% else %}
-  include h5bp/ssl/certificate_files.conf;
+  ssl_certificate     /etc/nginx/certs/{{ domain }}.crt;
+  ssl_certificate_key /etc/nginx/certs/{{ domain }}.key;
   {% endif %}
 
   # and redirect to the non-www host (declared below)
@@ -56,7 +58,8 @@ server {
   ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
   {% else %}
-  include h5bp/ssl/certificate_files.conf;
+  ssl_certificate     /etc/nginx/certs/{{ domain }}.crt;
+  ssl_certificate_key /etc/nginx/certs/{{ domain }}.key;
   {% endif %}
 {% else %}
   listen [::]:80;
@@ -69,11 +72,8 @@ server {
   # Path for static files
   root {{ http_root }}/{{ domain }}/{{ public_directory }};
 
-  #Specify a charset
-  charset utf-8;
-
   # Logs for local domain
-  access_log /var/log/nginx/{{ domain }}/access.log main;
+  access_log /var/log/nginx/{{ domain }}/access.log main if=$log_enabled;
   error_log  /var/log/nginx/{{ domain }}/error.log;
 
 {% if env_name == "dev" %}
@@ -88,6 +88,9 @@ server {
     access_log    off;
     log_not_found off;
   }
+
+  # Add CSP header
+  add_header Content-Security-Policy "{{content_security_policy | to_csp_header }}" always;
 
   index index.html index.htm;
 
@@ -104,7 +107,7 @@ server {
 {% endif %}
 
   # Include the basic h5bp config set
-  include h5bp/basic.conf;
+  include conf.d/h5bp.conf;
 
 {% for file in nginx_configs | default([]) %}
   include conf.d/{{ file }};

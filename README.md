@@ -23,6 +23,7 @@ Role Variables
 - `public_directory` &mdash; Publicly visible directory for site, eg "public" or "htdocs". Default is "public"
 - `max_upload_size` &mdash; Maximum upload size in MB. Default is "10"
 - `domain` &mdash; Domain name for site to create. Undefined by default.
+- `content_security_policy` &mdash; Content security policy to add to domain, formatted as a dict of lists or booleans. Appropriate values will automatically have single quotes (`'`) applied. Default: see [defaults/main.yml](defaults/main.yml)
 - `nginx_configs` &mdash; Additional config files to add to the end of the domain's `server` block. These files should be copied to `/etc/nginx/conf.d`. Add configs for your particular application server type here. Default is an empty array
 - `passenger_app` &mdash; Is the current domain a Passenger app (ie, Node, Ruby, Python)? Useful if the app needs to be restarted after updating configs. Default is no
 - `copy_index` &mdash; Copy an index.html stub to the site. Default is no.
@@ -36,7 +37,7 @@ Role Variables
 - `state_name` &mdash; State or province name to use when generating self signed certificate. Undefined by default.
 - `locality_name` &mdash; City or locality name to use when generating self signed certificate. Undefined by default.
 - `org_name` &mdash; Organization name to use when generating self signed certificate. Undefined by default.
-- `h5bp_commit` &mdash; Git hash to use for pulling files from [HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-nginx). Default is "959839d81fe35084d4a62712bbd29825b2d31d41".
+- `h5bp_commit` &mdash; Git hash or version number to use for pulling files from [HTML5 Boilerplate Server Configs](https://github.com/h5bp/server-configs-nginx). Default is "3.1.0".
 - `setuptools_version` &mdash; Version of `setuptools` to install via Pip. Default is 40.6.2.
 
 SSL & Let's Encrypt

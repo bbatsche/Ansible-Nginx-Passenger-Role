@@ -20,7 +20,7 @@ server {
   location /.well-known/ {
     root {{ http_root }}/letsencrypt;
 
-    include h5bp/basic.conf;
+    include conf.d/h5bp.conf;
   }
   {% endif %}
 {% endif %}

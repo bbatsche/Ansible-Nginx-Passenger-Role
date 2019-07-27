@@ -18,7 +18,7 @@ end
 describe command("curl -i prod-index.dev") do
   include_examples("curl request", "200")
   include_examples("curl request html")
-  include_examples("curl request cache", Time.at(1).to_datetime)
+  include_examples("curl request cache", 0)
 
   it "responds with index.html" do
     expect(subject.stdout).to match /Nginx is serving content on prod-index\.dev/

@@ -1,6 +1,9 @@
+{% if ansible_distribution_release == "bionic" %}
 include h5bp/ssl/policy_modern.conf;
+{% else %}
+include conf.d/ssl_policy_intermediate.conf;
+{% endif %}
 include h5bp/ssl/ssl_engine.conf;
-include h5bp/security/strict-transport-security.conf;
 
 # Diffie-Hellman parameter for DHE ciphersuites
 ssl_dhparam /etc/ssl/certs/dhparam.pem;
