@@ -5,16 +5,10 @@
 
 - name: Configure Self Signed Certificate
   block:
-    - name: Create OpenSSL Private Key
-      openssl_privatekey:
-        path: /etc/nginx/certs/{{ domain }}.key
-        size: "{{ privatekey_bits }}"
-      become: yes
-
     - name: Generate Certificate Signing Request
       openssl_csr:
         path:                   /etc/nginx/certs/{{ domain }}.csr
-        privatekey_path:        /etc/nginx/certs/{{ domain }}.key
+        privatekey_path:        /etc/nginx/certs/default.key
         common_name:            "{{ domain }}"
         subject_alt_name:       "DNS:{{ domain }},DNS:www.{{ domain }}"
         country_name:           "{{ country_name | default(omit) }}"
@@ -27,9 +21,10 @@
     - name: Generate Self Signed Certificate
       openssl_certificate:
         path:            /etc/nginx/certs/{{ domain }}.crt
-        privatekey_path: /etc/nginx/certs/{{ domain }}.key
+        privatekey_path: /etc/nginx/certs/default.key
         csr_path:        /etc/nginx/certs/{{ domain }}.csr
         provider:        selfsigned
       become: yes
       notify: Restart Nginx
+      register: ssl_cert_generated
   when: not use_letsencrypt

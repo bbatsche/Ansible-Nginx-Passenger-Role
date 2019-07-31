@@ -3,7 +3,7 @@
   apt:
     name:
       - "{{ 'python3-pip' if ansible_python.version.major == 3 else 'python-pip' }}"
-      - "{{ 'python3-dev' if ansible_python.version.major == 4 else 'python-dev' }}"
+      - "{{ 'python3-dev' if ansible_python.version.major == 3 else 'python-dev' }}"
       - libssl-dev
       - libffi-dev
     state: present
@@ -58,9 +58,9 @@
   notify: Restart Nginx
 
 - name: Generate DH Params
-  command: openssl dhparam -out /etc/ssl/certs/dhparam.pem {{ dhparam_bits }}
-  args:
-    creates: /etc/ssl/certs/dhparam.pem
+  openssl_dhparam:
+    path: /etc/ssl/certs/dhparam.pem
+    size: "{{ dhparam_bits }}"
   become: yes
   notify: Restart Nginx
 
